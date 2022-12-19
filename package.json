@@ -2,6 +2,8 @@
   "name": "assembly-tolly",
   "displayName": "AssEmbly",
   "description": "AssEmbly syntax highlighting and other language features",
+  "publisher": "TollyH",
+  "author": {"name": "TollyH", "url": "https://github.com/TollyH"},
   "repository": {"type": "git", "url": "https://github.com/TollyH/AssEmbly-VSCode"},
   "version": "0.0.1",
   "engines": {
