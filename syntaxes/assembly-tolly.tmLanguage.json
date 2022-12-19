@@ -1,0 +1,113 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "AssEmbly",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#literals"
+		},
+		{
+			"include": "#labels"
+		},
+		{
+			"include": "#registers"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#errors"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "meta.preprocessor.assembler.mnemonic.assembly-tolly",
+					"match": "(?i)^(PAD|DAT)(?= |;|$)"
+				},
+				{
+					"name": "keyword.control.operation.mnemonic.assembly-tolly",
+					"match": "(?i)^(HLT|NOP|JMP|JEQ|JZO|JNE|JNZ|JLT|JCA|JLE|JGT|JGE|JNC|ADD|ICR|SUB|DCR|MUL|DIV|DVR|REM|SHL|SHR|AND|ORR|XOR|NOT|TST|CMP|MVB|MVW|MVD|MVQ|PSH|POP|CAL|RET|WCN|WCB|WCX|WCC|WFN|WFB|WFX|WFC|OFL|CFL|DFL|RCC|RFC)(?= |;|$)"
+				}
+			]
+		},
+		"literals": {
+			"patterns": [
+				{
+					"name": "constant.numeric.literal.binary.assembly-tolly",
+					"match": "(?i)(?<=\\s|,)0b[0-1]+?(?=\\s|,|$)"
+				},
+				{
+					"name": "constant.numeric.literal.decimal.assembly-tolly",
+					"match": "(?<=\\s|,)[0-9]+?(?=\\s|,|$)"
+				},
+				{
+					"name": "constant.numeric.literal.hexadecimal.assembly-tolly",
+					"match": "(?i)(?<=\\s|,)0x[0-9a-f]+?(?=\\s|,|$)"
+				}
+			]
+		},
+		"labels": {
+			"patterns": [
+				{
+					"name": "entity.name.class.label.address.literal.assembly-tolly",
+					"match": "(?<!^)(?<=\\s|,):&[A-Za-z_][A-Za-z0-9_]*(?=\\s|,|$)"
+				},
+				{
+					"name": "variable.name.label.reference.assembly-tolly",
+					"match": "(?<!^)(?<=\\s|,):[A-Za-z_][A-Za-z0-9_]*?(?=\\s|,|$)"
+				},
+				{
+					"name": "entity.name.tag.label.definition.assembly-tolly",
+					"match": "^:[A-Za-z_][A-Za-z0-9_]*(?:;|$|\\s)"
+				}
+			]
+		},
+		"registers": {
+			"patterns": [
+				{
+					"name": "entity.name.class.register.pointer.assembly-tolly",
+					"match": "(?i)(?<!^)(?<=\\s|,)\\*(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$)"
+				},
+				{
+					"name": "entity.name.function.register.assembly-tolly",
+					"match": "(?i)(?<!^)(?<=\\s|,)(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$)"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.literal.assembly-tolly",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.assembly-tolly",
+					"match": "\\\\\""
+				}
+			]
+		},
+		"comments": {
+			"name": "comment.line.assembly-tolly",
+			"match": ";.*"
+		},
+		"errors": {
+			"patterns": [
+				{
+					"name": "invalid.illegal.mnemonic.assembly-tolly",
+					"match": "(?i)^[^ ]+(?<!;.*|HLT|NOP|JMP|JEQ|JZO|JNE|JNZ|JLT|JCA|JLE|JGT|JGE|JNC|ADD|ICR|SUB|DCR|MUL|DIV|DVR|REM|SHL|SHR|AND|ORR|XOR|NOT|TST|CMP|MVB|MVW|MVD|MVQ|PSH|POP|CAL|RET|WCN|WCB|WCX|WCC|WFN|WFB|WFX|WFC|OFL|CFL|DFL|RCC|RFC|PAD|DAT)"
+				},
+				{
+					"name": "invalid.illegal.operand.assembly-tolly",
+					"match": "(?i)(?<!^)(?<=\\s|,|^)[^ ,]+(?<!rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$)"
+				}
+			]
+		}
+	},
+	"scopeName": "source.assembly-tolly"
+}

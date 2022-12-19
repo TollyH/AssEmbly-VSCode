@@ -1,0 +1,26 @@
+{
+  "name": "assembly-tolly",
+  "displayName": "AssEmbly",
+  "description": "AssEmbly syntax highlighting and other language features",
+  "repository": {"type": "git", "url": "https://github.com/TollyH/AssEmbly-VSCode"},
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "assembly-tolly",
+      "aliases": ["AssEmbly", "assembly-tolly"],
+      "extensions": [".asm",".assembly",".ass"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "assembly-tolly",
+      "scopeName": "source.assembly-tolly",
+      "path": "./syntaxes/assembly-tolly.tmLanguage.json"
+    }]
+  }
+}
