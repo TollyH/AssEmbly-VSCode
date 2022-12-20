@@ -16,59 +16,65 @@ const memLocationOperands = [OperandType.Label, OperandType.Pointer];
 const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Literal];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
+class MnemonicInfo {
+    constructor(operandCombinations, description) {
+        this.operandCombinations = operandCombinations;
+        this.description = description;
+    }
+}
 const mnemonics = {
-    "HLT": ["## Halt"],
-    "NOP": ["## No Operation"],
-    "JMP": [memLocationOperands, "## Jump Unconditionally"],
-    "JEQ": [memLocationOperands, "## Jump If Equal To"],
-    "JZO": [memLocationOperands, "## Jump If Zero"],
-    "JNE": [memLocationOperands, "## Jump If Not Equal"],
-    "JNZ": [memLocationOperands, "## Jump If Not Zero"],
-    "JLT": [memLocationOperands, "## Jump If Less Than"],
-    "JCA": [memLocationOperands, "## Jump If Carry"],
-    "JLE": [memLocationOperands, "## Jump If Less Than or Equal To"],
-    "JGT": [memLocationOperands, "## Jump If Greater Than"],
-    "JGE": [memLocationOperands, "## Jump If Greater Than or Equal To"],
-    "JNC": [memLocationOperands, "## Jump If Not Carry"],
-    "ADD": [registerOperands, allOperands, "## Add"],
-    "ICR": [registerOperands, "## Increment"],
-    "SUB": [registerOperands, allOperands, "## Subtract"],
-    "DCR": [registerOperands, "## Decrement"],
-    "MUL": [registerOperands, allOperands, "## Multiply"],
-    "DIV": [registerOperands, allOperands, "## Divide (Ignore Remainder)"],
-    "DVR": [registerOperands, registerOperands, allOperands, "## Divide (With Remainder)"],
-    "REM": [registerOperands, allOperands, "## Remainder"],
-    "SHL": [registerOperands, allOperands, "## Shift Left"],
-    "SHR": [registerOperands, allOperands, "## Shift Right"],
-    "AND": [registerOperands, allOperands, "## Bitwise And"],
-    "ORR": [registerOperands, allOperands, "## Bitwise Or"],
-    "XOR": [registerOperands, allOperands, "## Bitwise Exclusive Or"],
-    "NOT": [registerOperands, "## Bitwise Not"],
-    "TST": [registerOperands, allOperands, "## Test (Discarded Bitwise And)"],
-    "CMP": [registerOperands, allOperands, "## Compare (Discarded Subtraction)"],
-    "MVB": [writableOperands, allOperands, "## Move Byte (8-bits)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"],
-    "MVW": [writableOperands, allOperands, "## Move Word (16-bits, 2 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"],
-    "MVD": [writableOperands, allOperands, "## Move Double Word (32-bits, 4 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"],
-    "MVQ": [writableOperands, allOperands, "## Move Quad Word (64-bits, 8 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"],
-    "PSH": [allOperands, "## Push to Stack"],
-    "POP": [registerOperands, "## Pop from Stack"],
-    "CAL": [memLocationOperands, allOperandsOptional, "## Call Subroutine"],
-    "RET": [allOperandsOptional, "## Return from Subroutine"],
-    "WCN": [allOperands, "## Write Number (64-bit) to Console"],
-    "WCB": [allOperands, "## Write Byte to Console"],
-    "WCX": [allOperands, "## Write Byte to Console as Hexadecimal"],
-    "WCC": [allOperands, "## Write Byte to Console as Character"],
-    "WFN": [allOperands, "## Write Number (64-bit) to File"],
-    "WFB": [allOperands, "## Write Byte to File"],
-    "WFX": [allOperands, "## Write Byte to File as Hexadecimal"],
-    "WFC": [allOperands, "## Write Byte to File as Character"],
-    "OFL": [memLocationOperands, "## Open File"],
-    "CFL": ["Close File"],
-    "DFL": [memLocationOperands, "## Delete File"],
-    "RCC": [registerOperands, "## Read Character from Console"],
-    "RFC": [registerOperands, "## Read Character from File"],
-    "PAD": [literalOperands, "## Pad With 0s"],
-    "DAT": [literalOperands, "## Insert Raw Data"]
+    "HLT": new MnemonicInfo([], "## Halt"),
+    "NOP": new MnemonicInfo([], "## No Operation"),
+    "JMP": new MnemonicInfo([memLocationOperands], "## Jump Unconditionally"),
+    "JEQ": new MnemonicInfo([memLocationOperands], "## Jump If Equal To"),
+    "JZO": new MnemonicInfo([memLocationOperands], "## Jump If Zero"),
+    "JNE": new MnemonicInfo([memLocationOperands], "## Jump If Not Equal"),
+    "JNZ": new MnemonicInfo([memLocationOperands], "## Jump If Not Zero"),
+    "JLT": new MnemonicInfo([memLocationOperands], "## Jump If Less Than"),
+    "JCA": new MnemonicInfo([memLocationOperands], "## Jump If Carry"),
+    "JLE": new MnemonicInfo([memLocationOperands], "## Jump If Less Than or Equal To"),
+    "JGT": new MnemonicInfo([memLocationOperands], "## Jump If Greater Than"),
+    "JGE": new MnemonicInfo([memLocationOperands], "## Jump If Greater Than or Equal To"),
+    "JNC": new MnemonicInfo([memLocationOperands], "## Jump If Not Carry"),
+    "ADD": new MnemonicInfo([registerOperands, allOperands], "## Add"),
+    "ICR": new MnemonicInfo([registerOperands], "## Increment"),
+    "SUB": new MnemonicInfo([registerOperands, allOperands], "## Subtract"),
+    "DCR": new MnemonicInfo([registerOperands], "## Decrement"),
+    "MUL": new MnemonicInfo([registerOperands, allOperands], "## Multiply"),
+    "DIV": new MnemonicInfo([registerOperands, allOperands], "## Divide (Ignore Remainder)"),
+    "DVR": new MnemonicInfo([registerOperands, registerOperands, allOperands], "## Divide (With Remainder)"),
+    "REM": new MnemonicInfo([registerOperands, allOperands], "## Remainder"),
+    "SHL": new MnemonicInfo([registerOperands, allOperands], "## Shift Left"),
+    "SHR": new MnemonicInfo([registerOperands, allOperands], "## Shift Right"),
+    "AND": new MnemonicInfo([registerOperands, allOperands], "## Bitwise And"),
+    "ORR": new MnemonicInfo([registerOperands, allOperands], "## Bitwise Or"),
+    "XOR": new MnemonicInfo([registerOperands, allOperands], "## Bitwise Exclusive Or"),
+    "NOT": new MnemonicInfo([registerOperands], "## Bitwise Not"),
+    "TST": new MnemonicInfo([registerOperands, allOperands], "## Test (Discarded Bitwise And)"),
+    "CMP": new MnemonicInfo([registerOperands, allOperands], "## Compare (Discarded Subtraction)"),
+    "MVB": new MnemonicInfo([writableOperands, allOperands], "## Move Byte (8-bits)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
+    "MVW": new MnemonicInfo([writableOperands, allOperands], "## Move Word (16-bits, 2 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
+    "MVD": new MnemonicInfo([writableOperands, allOperands], "## Move Double Word (32-bits, 4 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
+    "MVQ": new MnemonicInfo([writableOperands, allOperands], "## Move Quad Word (64-bits, 8 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
+    "PSH": new MnemonicInfo([allOperands], "## Push to Stack"),
+    "POP": new MnemonicInfo([registerOperands], "## Pop from Stack"),
+    "CAL": new MnemonicInfo([memLocationOperands, allOperandsOptional], "## Call Subroutine"),
+    "RET": new MnemonicInfo([allOperandsOptional], "## Return from Subroutine"),
+    "WCN": new MnemonicInfo([allOperands], "## Write Number (64-bit) to Console"),
+    "WCB": new MnemonicInfo([allOperands], "## Write Byte to Console"),
+    "WCX": new MnemonicInfo([allOperands], "## Write Byte to Console as Hexadecimal"),
+    "WCC": new MnemonicInfo([allOperands], "## Write Byte to Console as Character"),
+    "WFN": new MnemonicInfo([allOperands], "## Write Number (64-bit) to File"),
+    "WFB": new MnemonicInfo([allOperands], "## Write Byte to File"),
+    "WFX": new MnemonicInfo([allOperands], "## Write Byte to File as Hexadecimal"),
+    "WFC": new MnemonicInfo([allOperands], "## Write Byte to File as Character"),
+    "OFL": new MnemonicInfo([memLocationOperands], "## Open File"),
+    "CFL": new MnemonicInfo([], "Close File"),
+    "DFL": new MnemonicInfo([memLocationOperands], "## Delete File"),
+    "RCC": new MnemonicInfo([registerOperands], "## Read Character from Console"),
+    "RFC": new MnemonicInfo([registerOperands], "## Read Character from File"),
+    "PAD": new MnemonicInfo([literalOperands], "## Pad With 0s"),
+    "DAT": new MnemonicInfo([literalOperands], "## Insert Raw Data")
 };
 const registers = {
     "rpo": "## Program Offset",
@@ -127,25 +133,25 @@ class AssEmblyCompletionItemProvider {
         let docString = new vscode.MarkdownString();
         // Mnemonics
         if (item.kind == vscode.CompletionItemKind.Keyword || item.kind == vscode.CompletionItemKind.Function) {
-            docString.appendMarkdown(mnemonics[item.label.toString()].slice(-1)[0]);
-            let operandTypes = mnemonics[item.label.toString()].slice(0, -1);
-            if (operandTypes.length > 0) {
+            docString.appendMarkdown(mnemonics[item.label.toString()].description);
+            let operandCombinations = mnemonics[item.label.toString()].operandCombinations;
+            if (operandCombinations.length > 0) {
                 docString.appendMarkdown("\n\n### Operand Requirements:\n\n");
-                for (let i = 0; i < operandTypes.length; i++) {
+                for (let i = 0; i < operandCombinations.length; i++) {
                     docString.appendMarkdown("`");
-                    for (let j = 0; j < operandTypes[i].length; j++) {
-                        if (operandTypes[i][j] == OperandType.Optional) {
+                    for (let j = 0; j < operandCombinations[i].length; j++) {
+                        if (operandCombinations[i][j] == OperandType.Optional) {
                             docString.appendMarkdown(" (Optional)");
                         }
                         else {
-                            docString.appendMarkdown(OperandType[operandTypes[i][j]]);
-                            if (j < operandTypes[i].length - 1 && operandTypes[i][j + 1] != OperandType.Optional) {
+                            docString.appendMarkdown(OperandType[operandCombinations[i][j]]);
+                            if (j < operandCombinations[i].length - 1 && operandCombinations[i][j + 1] != OperandType.Optional) {
                                 docString.appendMarkdown(" | ");
                             }
                         }
                     }
                     docString.appendMarkdown("`");
-                    if (i < operandTypes.length - 1) {
+                    if (i < operandCombinations.length - 1) {
                         docString.appendMarkdown(", ");
                     }
                 }
