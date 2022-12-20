@@ -19,7 +19,7 @@ class MnemonicInfo {
 	public operandCombinations: OperandType[][]
 	public description: string;
 
-	constructor (operandCombinations: OperandType[][], description: string) {
+	constructor(operandCombinations: OperandType[][], description: string) {
 		this.operandCombinations = operandCombinations;
 		this.description = description;
 	}
@@ -81,27 +81,61 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 };
 
 const registers: { [name: string]: string } = {
-	"rpo": "## Program Offset",
-	"rso": "## Stack Offset",
-	"rsb": "## Stack Base",
-	"rsf": "## Status Flags\n\n*(Zero Flag, Carry Flag, File End Flag, 61 remaining high bits undefined)*",
-	"rrv": "## Return Value",
-	"rfp": "## Fast Pass Parameter",
-	"rg0": "## General 0",
-	"rg1": "## General 1",
-	"rg2": "## General 2",
-	"rg3": "## General 3",
-	"rg4": "## General 4",
-	"rg5": "## General 5",
-	"rg6": "## General 6",
-	"rg7": "## General 7",
-	"rg8": "## General 8",
-	"rg9": "## General 9"
+	"rpo": "Program Offset",
+	"rso": "Stack Offset",
+	"rsb": "Stack Base",
+	"rsf": "Status Flags\n\n*(Zero Flag, Carry Flag, File End Flag, 61 remaining high bits undefined)*",
+	"rrv": "Return Value",
+	"rfp": "Fast Pass Parameter",
+	"rg0": "General 0",
+	"rg1": "General 1",
+	"rg2": "General 2",
+	"rg3": "General 3",
+	"rg4": "General 4",
+	"rg5": "General 5",
+	"rg6": "General 6",
+	"rg7": "General 7",
+	"rg8": "General 8",
+	"rg9": "General 9"
+}
+
+function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
+	let docString = new vscode.MarkdownString();
+	docString.appendMarkdown(mnemonics[mnemonicName.toString()].description);
+	let operandCombinations = mnemonics[mnemonicName.toString()].operandCombinations;
+	if (operandCombinations.length > 0) {
+		docString.appendMarkdown("\n\n### Operand Requirements:\n\n");
+		for (let i = 0; i < operandCombinations.length; i++) {
+			docString.appendMarkdown("`");
+			for (let j = 0; j < operandCombinations[i].length; j++) {
+				if (operandCombinations[i][j] == OperandType.Optional) {
+					docString.appendMarkdown(" (Optional)");
+				}
+				else {
+					docString.appendMarkdown(OperandType[operandCombinations[i][j]]);
+					if (j < operandCombinations[i].length - 1 && operandCombinations[i][j + 1] != OperandType.Optional) {
+						docString.appendMarkdown(" | ");
+					}
+				}
+			}
+			docString.appendMarkdown("`");
+			if (i < operandCombinations.length - 1) {
+				docString.appendMarkdown(", ");
+			}
+		}
+	}
+	return docString;
+}
+
+function generateRegisterDescription(registerName: string): vscode.MarkdownString {
+	let docString = new vscode.MarkdownString();
+	docString.appendMarkdown("## Register:\n### ");
+	docString.appendMarkdown(registers[registerName.toString()]);
+	return docString;
 }
 
 class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
-	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position,
-		token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
+	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
 		let completionItems: vscode.CompletionItem[] = [];
 		let beforeCursor = document.lineAt(position.line).text.slice(0, position.character).toUpperCase();
 		// Don't autocorrect label definitions or comments
@@ -145,39 +179,79 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 
 	public resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CompletionItem> {
 		// Provides documentation on the selected operand in the code completion window
-		let docString = new vscode.MarkdownString();
 		// Mnemonics
 		if (item.kind == vscode.CompletionItemKind.Keyword || item.kind == vscode.CompletionItemKind.Function) {
-			docString.appendMarkdown(mnemonics[item.label.toString()].description);
-			let operandCombinations = mnemonics[item.label.toString()].operandCombinations;
-			if (operandCombinations.length > 0) {
-				docString.appendMarkdown("\n\n### Operand Requirements:\n\n");
-				for (let i = 0; i < operandCombinations.length; i++) {
-					docString.appendMarkdown("`");
-					for (let j = 0; j < operandCombinations[i].length; j++) {
-						if (operandCombinations[i][j] == OperandType.Optional) {
-							docString.appendMarkdown(" (Optional)");
-						}
-						else {
-							docString.appendMarkdown(OperandType[operandCombinations[i][j]]);
-							if (j < operandCombinations[i].length - 1 && operandCombinations[i][j + 1] != OperandType.Optional) {
-								docString.appendMarkdown(" | ");
-							}
-						}
-					}
-					docString.appendMarkdown("`");
-					if (i < operandCombinations.length - 1) {
-						docString.appendMarkdown(", ");
-					}
-				}
-			}
+			item.documentation = generateMnemonicDescription(item.label.toString());
 		}
 		// Registers
 		else if (item.kind == vscode.CompletionItemKind.Variable) {
-			docString.appendMarkdown(registers[item.label.toString()]);
+			item.documentation = generateRegisterDescription(item.label.toString());
 		}
-		item.documentation = docString;
 		return item;
+	}
+}
+
+class AssEmblyHoverProvider implements vscode.HoverProvider {
+	public provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
+		let line = document.lineAt(position.line).text;
+		// If cursor is in the middle of a parameter consider the whole parameter
+		let commaIndex = line.indexOf(',', position.character);
+		let spaceIndex = line.indexOf(' ', position.character);
+		let endIndex;
+		if (commaIndex != -1 && spaceIndex != -1) {
+			endIndex = Math.min(commaIndex, spaceIndex);
+		}
+		else if (commaIndex != -1) {
+			endIndex = commaIndex;
+		}
+		else if (spaceIndex != -1) {
+			endIndex = spaceIndex;
+		}
+		else {
+			endIndex = line.length;
+		}
+		let beforeCursor = line.slice(0, endIndex).toUpperCase();
+		// Don't provide hover for comments or strings
+		if (beforeCursor.includes(';') || beforeCursor.includes('"')) {
+			return null;
+		}
+		// Mnemonic
+		if (!beforeCursor.includes(' ') && mnemonics[beforeCursor] != undefined) {
+			return new vscode.Hover(generateMnemonicDescription(beforeCursor));
+		}
+		let activeParameter = beforeCursor.split(' ').slice(-1)[0].split(',').slice(-1)[0];
+		let registerOpFormat = activeParameter.replace(/^\*/, '').toLowerCase();
+		// Register
+		if (registers[registerOpFormat] != undefined) {
+			let hoverString = generateRegisterDescription(registerOpFormat);
+			if (activeParameter[0] == '*') {
+				hoverString.appendMarkdown("\n\n*`\*`: Register contents will be treated as a pointer to address in memory*");
+			}
+			return new vscode.Hover(hoverString);
+		}
+		// Label reference
+		if (beforeCursor.includes(' ') && activeParameter[0] == ":") {
+			let hoverString = new vscode.MarkdownString("## Label Reference");
+			if (activeParameter.length > 1 && activeParameter[1] == '&') {
+				hoverString.appendMarkdown("\n\n*`&`: Address corresponding to label will be treated as a literal numeric value*")
+			}
+			return new vscode.Hover(hoverString);
+		}
+		// Label definition
+		if (activeParameter[0] == ":") {
+			return new vscode.Hover("## Label Definition");
+		}
+		// Numeric literal
+		if (activeParameter[0] >= '0' && activeParameter[0] <= '9') {
+			let hoverString = new vscode.MarkdownString("## Numeric Literal");
+			if (activeParameter.startsWith("0X")) {
+				hoverString.appendMarkdown("\n\n*`0x`: Hexadecimal number*");
+			}
+			else if (activeParameter.startsWith("0B")) {
+				hoverString.appendMarkdown("\n\n*`0b`: Binary number*");
+			}
+			return new vscode.Hover(hoverString);
+		}
 	}
 }
 
@@ -188,6 +262,13 @@ export function activate(context: vscode.ExtensionContext) {
 			new AssEmblyCompletionItemProvider()
 		)
 	);
+
+	context.subscriptions.push(
+		vscode.languages.registerHoverProvider(
+			{ scheme: 'file', language: 'assembly-tolly' },
+			new AssEmblyHoverProvider()
+		)
+	)
 }
 
 export function deactivate() { }
