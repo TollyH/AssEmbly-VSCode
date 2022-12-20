@@ -13,7 +13,7 @@ var OperandType;
 const allOperands = [OperandType.Register, OperandType.Literal, OperandType.Label, OperandType.Pointer];
 const allOperandsOptional = [OperandType.Register, OperandType.Literal, OperandType.Label, OperandType.Pointer, OperandType.Optional];
 const memLocationOperands = [OperandType.Label, OperandType.Pointer];
-const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Literal];
+const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
 class MnemonicInfo {
