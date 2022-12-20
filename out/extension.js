@@ -17,8 +17,8 @@ const writableOperands = [OperandType.Register, OperandType.Label, OperandType.L
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
 const mnemonics = {
-    "HLT": [[], "## Halt"],
-    "NOP": ["No Operation"],
+    "HLT": ["## Halt"],
+    "NOP": ["## No Operation"],
     "JMP": [memLocationOperands, "## Jump Unconditionally"],
     "JEQ": [memLocationOperands, "## Jump If Equal To"],
     "JZO": [memLocationOperands, "## Jump If Zero"],

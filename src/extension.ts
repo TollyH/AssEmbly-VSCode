@@ -16,8 +16,8 @@ const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
 
 const mnemonics: { [mnemonic: string]: (OperandType[] | string | vscode.MarkdownString)[] } = {
-	"HLT": [[], "## Halt"],
-	"NOP": ["No Operation"],
+	"HLT": ["## Halt"],
+	"NOP": ["## No Operation"],
 	"JMP": [memLocationOperands, "## Jump Unconditionally"],
 	"JEQ": [memLocationOperands, "## Jump If Equal To"],
 	"JZO": [memLocationOperands, "## Jump If Zero"],
