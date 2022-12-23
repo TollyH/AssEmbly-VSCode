@@ -73,7 +73,7 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"WFX": new MnemonicInfo([allOperands], "## Write Byte to File as Hexadecimal"),
 	"WFC": new MnemonicInfo([allOperands], "## Write Byte to File as Character"),
 	"OFL": new MnemonicInfo([memLocationOperands], "## Open File"),
-	"CFL": new MnemonicInfo([], "Close File"),
+	"CFL": new MnemonicInfo([], "## Close File"),
 	"DFL": new MnemonicInfo([memLocationOperands], "## Delete File"),
 	"FEX": new MnemonicInfo([registerOperands, memLocationOperands], "## File Exists?"),
 	"RCC": new MnemonicInfo([registerOperands], "## Read Character from Console"),
