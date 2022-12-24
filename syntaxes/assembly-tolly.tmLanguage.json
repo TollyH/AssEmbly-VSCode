@@ -41,15 +41,15 @@
 			"patterns": [
 				{
 					"name": "constant.numeric.literal.binary.assembly-tolly",
-					"match": "(?i)(?<=\\s|,)0b[0-1]+?(?=\\s|,|$)"
+					"match": "(?i)(?<=\\s|,)0b[0-1][0-1_]*?(?=\\s|,|$)"
 				},
 				{
 					"name": "constant.numeric.literal.decimal.assembly-tolly",
-					"match": "(?<=\\s|,)[0-9]+?(?=\\s|,|$)"
+					"match": "(?<=\\s|,)[0-9][0-9_]*?(?=\\s|,|$)"
 				},
 				{
 					"name": "constant.numeric.literal.hexadecimal.assembly-tolly",
-					"match": "(?i)(?<=\\s|,)0x[0-9a-f]+?(?=\\s|,|$)"
+					"match": "(?i)(?<=\\s|,)0x[0-9a-f][0-9a-f_]*?(?=\\s|,|$)"
 				}
 			]
 		},
