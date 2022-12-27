@@ -29,7 +29,7 @@
 			"patterns": [
 				{
 					"name": "meta.preprocessor.assembler.mnemonic.assembly-tolly",
-					"match": "(?i)^(PAD|DAT)(?= |;|$)"
+					"match": "(?i)^(PAD|DAT|NUM|IMP|MAC)(?= |;|$)"
 				},
 				{
 					"name": "keyword.control.operation.mnemonic.assembly-tolly",
@@ -100,11 +100,7 @@
 			"patterns": [
 				{
 					"name": "invalid.illegal.mnemonic.assembly-tolly",
-					"match": "(?i)^[^ ]+(?<!;.*|HLT|NOP|JMP|JEQ|JZO|JNE|JNZ|JLT|JCA|JLE|JGT|JGE|JNC|ADD|ICR|SUB|DCR|MUL|DIV|DVR|REM|SHL|SHR|AND|ORR|XOR|NOT|RNG|TST|CMP|MVB|MVW|MVD|MVQ|PSH|POP|CAL|RET|WCN|WCB|WCX|WCC|WFN|WFB|WFX|WFC|OFL|CFL|DFL|FEX|RCC|RFC|PAD|DAT)"
-				},
-				{
-					"name": "invalid.illegal.operand.assembly-tolly",
-					"match": "(?i)(?<!^)(?<=\\s|,|^)[^ ,]+(?<!rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$)"
+					"match": "(?i)^[^ ]+(?<!;.*|HLT|NOP|JMP|JEQ|JZO|JNE|JNZ|JLT|JCA|JLE|JGT|JGE|JNC|ADD|ICR|SUB|DCR|MUL|DIV|DVR|REM|SHL|SHR|AND|ORR|XOR|NOT|RNG|TST|CMP|MVB|MVW|MVD|MVQ|PSH|POP|CAL|RET|WCN|WCB|WCX|WCC|WFN|WFB|WFX|WFC|OFL|CFL|DFL|FEX|RCC|RFC|PAD|DAT|NUM|IMP|MAC)"
 				}
 			]
 		}

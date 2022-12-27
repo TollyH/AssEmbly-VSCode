@@ -79,7 +79,10 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"RCC": new MnemonicInfo([registerOperands], "## Read Character from Console"),
 	"RFC": new MnemonicInfo([registerOperands], "## Read Character from File"),
 	"PAD": new MnemonicInfo([literalOperands], "## Pad With 0s"),
-	"DAT": new MnemonicInfo([literalOperands], "## Insert Raw Data")
+	"DAT": new MnemonicInfo([literalOperands], "## Insert Raw Byte"),
+	"NUM": new MnemonicInfo([literalOperands], "## Insert Raw Quad Word (64-bits, 8 bytes)"),
+	"IMP": new MnemonicInfo([literalOperands], "## Import File Contents"),
+	"MAC": new MnemonicInfo([], "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*")
 };
 
 const registers: { [name: string]: string } = {
@@ -254,6 +257,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			}
 			return new vscode.Hover(hoverString);
 		}
+		return new vscode.Hover(new vscode.MarkdownString("## Invalid\n\nUnless this is the name of a defined macro or is within a macro definition"));
 	}
 }
 
