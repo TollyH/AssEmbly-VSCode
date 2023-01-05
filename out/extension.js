@@ -199,8 +199,8 @@ class AssEmblyHoverProvider {
             endIndex = line.length;
         }
         let beforeCursor = line.slice(0, endIndex).toUpperCase();
-        // Don't provide hover for comments or strings
-        if (beforeCursor.includes(';') || beforeCursor.includes('"')) {
+        // Don't provide hover for comments, strings, or empty lines
+        if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length == 0) {
             return null;
         }
         // Mnemonic
