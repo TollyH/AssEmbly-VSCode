@@ -76,6 +76,7 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"CFL": new MnemonicInfo([], "## Close File"),
 	"DFL": new MnemonicInfo([memLocationOperands], "## Delete File"),
 	"FEX": new MnemonicInfo([registerOperands, memLocationOperands], "## File Exists?"),
+	"FSZ": new MnemonicInfo([registerOperands, memLocationOperands], "## Get File Size"),
 	"RCC": new MnemonicInfo([registerOperands], "## Read Character from Console"),
 	"RFC": new MnemonicInfo([registerOperands], "## Read Character from File"),
 	"PAD": new MnemonicInfo([literalOperands], "## Pad With 0s"),
