@@ -5,7 +5,7 @@
   "publisher": "TollyH",
   "author": {"name": "TollyH", "url": "https://github.com/TollyH"},
   "repository": {"type": "git", "url": "https://github.com/TollyH/AssEmbly-VSCode"},
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.74.0"
   },
