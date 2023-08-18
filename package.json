@@ -5,7 +5,7 @@
   "publisher": "TollyH",
   "author": {"name": "TollyH", "url": "https://github.com/TollyH"},
   "repository": {"type": "git", "url": "https://github.com/TollyH/AssEmbly-VSCode"},
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -17,17 +17,33 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "languages": [{
-      "id": "assembly-tolly",
-      "aliases": ["AssEmbly", "assembly-tolly"],
-      "extensions": [".asm",".assembly",".ass"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "assembly-tolly",
-      "scopeName": "source.assembly-tolly",
-      "path": "./syntaxes/assembly-tolly.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "assembly-tolly",
+        "aliases": ["AssEmbly", "assembly-tolly"],
+        "extensions": [".asm",".assembly",".ass"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "assembly-tolly",
+        "scopeName": "source.assembly-tolly",
+        "path": "./syntaxes/assembly-tolly.tmLanguage.json"
+      }
+    ],
+    "configuration":[
+      {
+        "title": "AssEmbly",
+        "properties": {
+          "AssEmblyTolly.linterPath": {
+            "type": "string",
+            "default": "AssEmbly",
+            "description": "The path to the AssEmbly executable that will provide source code linting. Default requires the executable to be on PATH. Must be version 1.1.0+"
+          }
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
+const child_process = require("child_process");
 var OperandType;
 (function (OperandType) {
     OperandType[OperandType["Register"] = 0] = "Register";
@@ -80,7 +81,8 @@ const mnemonics = {
     "DAT": new MnemonicInfo([literalOperands], "## Insert Raw Byte"),
     "NUM": new MnemonicInfo([literalOperands], "## Insert Raw Quad Word (64-bits, 8 bytes)"),
     "IMP": new MnemonicInfo([literalOperands], "## Import File Contents"),
-    "MAC": new MnemonicInfo([], "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*")
+    "MAC": new MnemonicInfo([], "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*"),
+    "ANALYZER": new MnemonicInfo([], "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`.")
 };
 const registers = {
     "rpo": "Program Offset",
@@ -100,10 +102,11 @@ const registers = {
     "rg8": "General 8",
     "rg9": "General 9"
 };
+const directives = ["PAD", "DAT", "NUM", "IMP", "MAC", "ANALYZER"];
 function generateMnemonicDescription(mnemonicName) {
     let docString = new vscode.MarkdownString();
-    docString.appendMarkdown(mnemonics[mnemonicName.toString()].description);
-    let operandCombinations = mnemonics[mnemonicName.toString()].operandCombinations;
+    docString.appendMarkdown(mnemonics[mnemonicName].description);
+    let operandCombinations = mnemonics[mnemonicName].operandCombinations;
     if (operandCombinations.length > 0) {
         docString.appendMarkdown("\n\n### Operand Requirements:\n\n");
         for (let i = 0; i < operandCombinations.length; i++) {
@@ -143,7 +146,7 @@ class AssEmblyCompletionItemProvider {
             if (!beforeCursor.includes(' ')) {
                 for (let m in mnemonics) {
                     if (m.startsWith(beforeCursor)) {
-                        completionItems.push(new vscode.CompletionItem(m, m == "PAD" || m == "DAT"
+                        completionItems.push(new vscode.CompletionItem(m, directives.find(x => x == m) !== undefined
                             ? vscode.CompletionItemKind.Keyword
                             : vscode.CompletionItemKind.Function));
                     }
@@ -244,9 +247,81 @@ class AssEmblyHoverProvider {
         return new vscode.Hover(new vscode.MarkdownString("## Invalid\n\nUnless this is the name of a defined macro or is within a macro definition"));
     }
 }
+function updateDiagnostics(collection) {
+    for (let d = 0; d < vscode.workspace.textDocuments.length; d++) {
+        let document = vscode.workspace.textDocuments[d];
+        if (document && document.languageId === "assembly-tolly") {
+            let warnings;
+            child_process.exec(`${vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath')} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header`, async (err, stdout, _) => {
+                try {
+                    console.log(`AssEmbly linter: attempting to decode "${stdout.trim()}"`);
+                    warnings = JSON.parse(stdout);
+                }
+                catch {
+                    warnings = null;
+                }
+                if (warnings !== null && !Array.isArray(warnings) && "error" in warnings) {
+                    console.log('Error from AssEmbly while linting: ' + warnings["error"]);
+                    return;
+                }
+                if (err) {
+                    console.log('Unexpected error launching AssEmbly executable: ' + err
+                        + ' The following may provide some info: ' + stdout);
+                    return;
+                }
+                if (warnings === null) {
+                    console.log("An unknown error occurred during AssEmbly linting");
+                    return;
+                }
+                let warningArray = warnings;
+                let newDiagnostics = {};
+                for (let i = 0; i < warningArray.length; i++) {
+                    let warning = warningArray[i];
+                    let path = warning["File"];
+                    path = path === "" ? document.uri.fsPath : path;
+                    let lineIndex = warning["Line"] - 1;
+                    let severity = warning["Severity"];
+                    let diagnosticSeverity = severity === 0 || severity === 1
+                        ? vscode.DiagnosticSeverity.Error
+                        : severity === 2
+                            ? vscode.DiagnosticSeverity.Warning
+                            : vscode.DiagnosticSeverity.Information;
+                    let messageStart = severity === 0
+                        ? "Fatal Error"
+                        : severity === 1
+                            ? `Error ${String(warning["Code"]).padStart(4, '0')}`
+                            : severity === 2
+                                ? `Warning ${String(warning["Code"]).padStart(4, '0')}`
+                                : `Suggestion ${String(warning["Code"]).padStart(4, '0')}`;
+                    if (!(path in newDiagnostics)) {
+                        newDiagnostics[path] = [];
+                    }
+                    let doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
+                    let lineLength = doc.lineAt(lineIndex).text.length;
+                    newDiagnostics[path].push(new vscode.Diagnostic(new vscode.Range(lineIndex, 0, lineIndex, lineLength), `${messageStart}: ${warning["Message"]}`, diagnosticSeverity));
+                }
+                for (let path in newDiagnostics) {
+                    collection.set(vscode.Uri.file(path), newDiagnostics[path]);
+                }
+            });
+        }
+    }
+}
 function activate(context) {
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'assembly-tolly' }, new AssEmblyCompletionItemProvider()));
     context.subscriptions.push(vscode.languages.registerHoverProvider({ scheme: 'file', language: 'assembly-tolly' }, new AssEmblyHoverProvider()));
+    let diagnosticCollection = vscode.languages.createDiagnosticCollection('AssEmblyLint');
+    context.subscriptions.push(diagnosticCollection);
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(_ => {
+        updateDiagnostics(diagnosticCollection);
+    }));
+    context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(_ => {
+        updateDiagnostics(diagnosticCollection);
+    }));
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(_ => {
+        updateDiagnostics(diagnosticCollection);
+    }));
+    updateDiagnostics(diagnosticCollection);
 }
 exports.activate = activate;
 function deactivate() { }
