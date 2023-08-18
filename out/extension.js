@@ -249,63 +249,64 @@ class AssEmblyHoverProvider {
 }
 function updateDiagnostics(collection) {
     collection.clear();
-    for (let d = 0; d < vscode.workspace.textDocuments.length; d++) {
-        let document = vscode.workspace.textDocuments[d];
-        if (document && document.languageId === "assembly-tolly") {
-            let warnings;
-            child_process.exec(`${vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath')} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header`, async (err, stdout, _) => {
-                try {
-                    console.log(`AssEmbly linter: attempting to decode "${stdout.trim()}"`);
-                    warnings = JSON.parse(stdout);
-                }
-                catch {
-                    warnings = null;
-                }
-                if (warnings !== null && !Array.isArray(warnings) && "error" in warnings) {
-                    console.error('Error from AssEmbly while linting: ' + warnings["error"]);
-                    return;
-                }
-                if (err) {
-                    console.error('Unexpected error launching AssEmbly executable: ' + err
-                        + ' The following may provide some info: ' + stdout);
-                    return;
-                }
-                if (warnings === null) {
-                    console.error("An unknown error occurred during AssEmbly linting");
-                    return;
-                }
-                let warningArray = warnings;
-                let newDiagnostics = {};
-                for (let i = 0; i < warningArray.length; i++) {
-                    let warning = warningArray[i];
-                    let path = warning["File"];
-                    path = path === "" ? document.uri.fsPath : path;
-                    let lineIndex = warning["Line"] - 1;
-                    let severity = warning["Severity"];
-                    let diagnosticSeverity = severity === 0 || severity === 1
-                        ? vscode.DiagnosticSeverity.Error
+    let document = vscode.window.activeTextEditor?.document;
+    if (document !== undefined && document.languageId === "assembly-tolly") {
+        let warnings;
+        child_process.exec(`${vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath')} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header`, async (err, stdout, _) => {
+            if (document === undefined) {
+                return;
+            }
+            try {
+                console.log(`AssEmbly linter: attempting to decode "${stdout.trim()}"`);
+                warnings = JSON.parse(stdout);
+            }
+            catch {
+                warnings = null;
+            }
+            if (warnings !== null && !Array.isArray(warnings) && "error" in warnings) {
+                console.error('Error from AssEmbly while linting: ' + warnings["error"]);
+                return;
+            }
+            if (err) {
+                console.error('Unexpected error launching AssEmbly executable: ' + err
+                    + ' The following may provide some info: ' + stdout);
+                return;
+            }
+            if (warnings === null) {
+                console.error("An unknown error occurred during AssEmbly linting");
+                return;
+            }
+            let warningArray = warnings;
+            let newDiagnostics = {};
+            for (let i = 0; i < warningArray.length; i++) {
+                let warning = warningArray[i];
+                let path = warning["File"];
+                path = path === "" ? document.uri.fsPath : path;
+                let lineIndex = warning["Line"] - 1;
+                let severity = warning["Severity"];
+                let diagnosticSeverity = severity === 0 || severity === 1
+                    ? vscode.DiagnosticSeverity.Error
+                    : severity === 2
+                        ? vscode.DiagnosticSeverity.Warning
+                        : vscode.DiagnosticSeverity.Information;
+                let messageStart = severity === 0
+                    ? "Fatal Error"
+                    : severity === 1
+                        ? `Error ${String(warning["Code"]).padStart(4, '0')}`
                         : severity === 2
-                            ? vscode.DiagnosticSeverity.Warning
-                            : vscode.DiagnosticSeverity.Information;
-                    let messageStart = severity === 0
-                        ? "Fatal Error"
-                        : severity === 1
-                            ? `Error ${String(warning["Code"]).padStart(4, '0')}`
-                            : severity === 2
-                                ? `Warning ${String(warning["Code"]).padStart(4, '0')}`
-                                : `Suggestion ${String(warning["Code"]).padStart(4, '0')}`;
-                    if (!(path in newDiagnostics)) {
-                        newDiagnostics[path] = [];
-                    }
-                    let doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
-                    let lineLength = doc.lineAt(lineIndex).text.length;
-                    newDiagnostics[path].push(new vscode.Diagnostic(new vscode.Range(lineIndex, 0, lineIndex, lineLength), `${messageStart}: ${warning["Message"]}`, diagnosticSeverity));
+                            ? `Warning ${String(warning["Code"]).padStart(4, '0')}`
+                            : `Suggestion ${String(warning["Code"]).padStart(4, '0')}`;
+                if (!(path in newDiagnostics)) {
+                    newDiagnostics[path] = [];
                 }
-                for (let path in newDiagnostics) {
-                    collection.set(vscode.Uri.file(path), newDiagnostics[path]);
-                }
-            });
-        }
+                let doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
+                let lineLength = doc.lineAt(lineIndex).text.length;
+                newDiagnostics[path].push(new vscode.Diagnostic(new vscode.Range(lineIndex, 0, lineIndex, lineLength), `${messageStart}: ${warning["Message"]}`, diagnosticSeverity));
+            }
+            for (let path in newDiagnostics) {
+                collection.set(vscode.Uri.file(path), newDiagnostics[path]);
+            }
+        });
     }
 }
 function activate(context) {
@@ -320,6 +321,9 @@ function activate(context) {
         updateDiagnostics(diagnosticCollection);
     }));
     context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(_ => {
+        updateDiagnostics(diagnosticCollection);
+    }));
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(_ => {
         updateDiagnostics(diagnosticCollection);
     }));
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(_ => {
