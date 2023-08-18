@@ -26,7 +26,7 @@
 			"patterns": [
 				{
 					"name": "meta.preprocessor.assembler.mnemonic.assembly-tolly",
-					"match": "(?i)^(PAD|DAT|NUM|IMP|MAC)(?= |;|$)"
+					"match": "(?i)^(PAD|DAT|NUM|IMP|MAC|ANALYZER)(?= |;|$)"
 				},
 				{
 					"name": "keyword.control.operation.mnemonic.assembly-tolly",

@@ -83,7 +83,8 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"DAT": new MnemonicInfo([literalOperands], "## Insert Raw Byte"),
 	"NUM": new MnemonicInfo([literalOperands], "## Insert Raw Quad Word (64-bits, 8 bytes)"),
 	"IMP": new MnemonicInfo([literalOperands], "## Import File Contents"),
-	"MAC": new MnemonicInfo([], "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*")
+	"MAC": new MnemonicInfo([], "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*"),
+	"ANALYZER": new MnemonicInfo([], "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`.")
 };
 
 const registers: { [name: string]: string } = {
@@ -105,10 +106,12 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 }
 
+const directives = ["PAD", "DAT", "NUM", "IMP", "MAC", "ANALYZER"];
+
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
-	docString.appendMarkdown(mnemonics[mnemonicName.toString()].description);
-	let operandCombinations = mnemonics[mnemonicName.toString()].operandCombinations;
+	docString.appendMarkdown(mnemonics[mnemonicName].description);
+	let operandCombinations = mnemonics[mnemonicName].operandCombinations;
 	if (operandCombinations.length > 0) {
 		docString.appendMarkdown("\n\n### Operand Requirements:\n\n");
 		for (let i = 0; i < operandCombinations.length; i++) {
@@ -152,7 +155,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					if (m.startsWith(beforeCursor)) {
 						completionItems.push(
 							new vscode.CompletionItem(
-								m, m == "PAD" || m == "DAT"
+								m, directives.find(x => x == m) !== undefined
 								? vscode.CompletionItemKind.Keyword
 								: vscode.CompletionItemKind.Function
 							)
