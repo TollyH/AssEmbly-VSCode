@@ -244,7 +244,7 @@ class AssEmblyHoverProvider {
             }
             return new vscode.Hover(hoverString);
         }
-        return new vscode.Hover(new vscode.MarkdownString("## Invalid\n\nUnless this is the name of a defined macro or is within a macro definition"));
+        return null;
     }
 }
 function updateDiagnostics(collection) {
