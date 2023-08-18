@@ -112,12 +112,12 @@ function generateMnemonicDescription(mnemonicName) {
         for (let i = 0; i < operandCombinations.length; i++) {
             docString.appendMarkdown("`");
             for (let j = 0; j < operandCombinations[i].length; j++) {
-                if (operandCombinations[i][j] == OperandType.Optional) {
+                if (operandCombinations[i][j] === OperandType.Optional) {
                     docString.appendMarkdown(" (Optional)");
                 }
                 else {
                     docString.appendMarkdown(OperandType[operandCombinations[i][j]]);
-                    if (j < operandCombinations[i].length - 1 && operandCombinations[i][j + 1] != OperandType.Optional) {
+                    if (j < operandCombinations[i].length - 1 && operandCombinations[i][j + 1] !== OperandType.Optional) {
                         docString.appendMarkdown(" | ");
                     }
                 }
@@ -141,12 +141,12 @@ class AssEmblyCompletionItemProvider {
         let completionItems = [];
         let beforeCursor = document.lineAt(position.line).text.slice(0, position.character).toUpperCase();
         // Don't autocorrect label definitions or comments
-        if (beforeCursor[0] != ':' && !beforeCursor.includes(';')) {
+        if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
             // If this is the first word in the line
             if (!beforeCursor.includes(' ')) {
                 for (let m in mnemonics) {
                     if (m.startsWith(beforeCursor)) {
-                        completionItems.push(new vscode.CompletionItem(m, directives.find(x => x == m) !== undefined
+                        completionItems.push(new vscode.CompletionItem(m, directives.find(x => x === m) !== undefined
                             ? vscode.CompletionItemKind.Keyword
                             : vscode.CompletionItemKind.Function));
                     }
@@ -155,9 +155,9 @@ class AssEmblyCompletionItemProvider {
             else {
                 let activeParameter = beforeCursor.split(' ').slice(-1)[0].split(',').slice(-1)[0];
                 // If not a label or numeral
-                if (activeParameter[0] != ':' && (activeParameter[0] < '0' || activeParameter[0] > '9')) {
+                if (activeParameter[0] !== ':' && (activeParameter[0] < '0' || activeParameter[0] > '9')) {
                     // Ignore pointer symbol
-                    if (activeParameter[0] == '*') {
+                    if (activeParameter[0] === '*') {
                         activeParameter = activeParameter.slice(1);
                     }
                     for (let r in registers) {
@@ -173,11 +173,11 @@ class AssEmblyCompletionItemProvider {
     resolveCompletionItem(item, token) {
         // Provides documentation on the selected operand in the code completion window
         // Mnemonics
-        if (item.kind == vscode.CompletionItemKind.Keyword || item.kind == vscode.CompletionItemKind.Function) {
+        if (item.kind === vscode.CompletionItemKind.Keyword || item.kind === vscode.CompletionItemKind.Function) {
             item.documentation = generateMnemonicDescription(item.label.toString());
         }
         // Registers
-        else if (item.kind == vscode.CompletionItemKind.Variable) {
+        else if (item.kind === vscode.CompletionItemKind.Variable) {
             item.documentation = generateRegisterDescription(item.label.toString());
         }
         return item;
@@ -190,13 +190,13 @@ class AssEmblyHoverProvider {
         let commaIndex = line.indexOf(',', position.character);
         let spaceIndex = line.indexOf(' ', position.character);
         let endIndex;
-        if (commaIndex != -1 && spaceIndex != -1) {
+        if (commaIndex !== -1 && spaceIndex !== -1) {
             endIndex = Math.min(commaIndex, spaceIndex);
         }
-        else if (commaIndex != -1) {
+        else if (commaIndex !== -1) {
             endIndex = commaIndex;
         }
-        else if (spaceIndex != -1) {
+        else if (spaceIndex !== -1) {
             endIndex = spaceIndex;
         }
         else {
@@ -204,33 +204,33 @@ class AssEmblyHoverProvider {
         }
         let beforeCursor = line.slice(0, endIndex).toUpperCase();
         // Don't provide hover for comments, strings, or empty lines
-        if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length == 0) {
+        if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length === 0) {
             return null;
         }
         // Mnemonic
-        if (!beforeCursor.includes(' ') && mnemonics[beforeCursor] != undefined) {
+        if (!beforeCursor.includes(' ') && mnemonics[beforeCursor] !== undefined) {
             return new vscode.Hover(generateMnemonicDescription(beforeCursor));
         }
         let activeParameter = beforeCursor.split(' ').slice(-1)[0].split(',').slice(-1)[0];
         let registerOpFormat = activeParameter.replace(/^\*/, '').toLowerCase();
         // Register
-        if (registers[registerOpFormat] != undefined) {
+        if (registers[registerOpFormat] !== undefined) {
             let hoverString = generateRegisterDescription(registerOpFormat);
-            if (activeParameter[0] == '*') {
+            if (activeParameter[0] === '*') {
                 hoverString.appendMarkdown("\n\n*`\*`: Register contents will be treated as a pointer to address in memory*");
             }
             return new vscode.Hover(hoverString);
         }
         // Label reference
-        if (beforeCursor.includes(' ') && activeParameter[0] == ":") {
+        if (beforeCursor.includes(' ') && activeParameter[0] === ":") {
             let hoverString = new vscode.MarkdownString("## Label Reference");
-            if (activeParameter.length > 1 && activeParameter[1] == '&') {
+            if (activeParameter.length > 1 && activeParameter[1] === '&') {
                 hoverString.appendMarkdown("\n\n*`&`: Address corresponding to label will be treated as a literal numeric value*");
             }
             return new vscode.Hover(hoverString);
         }
         // Label definition
-        if (activeParameter[0] == ":") {
+        if (activeParameter[0] === ":") {
             return new vscode.Hover("## Label Definition");
         }
         // Numeric literal
