@@ -267,6 +267,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 }
 
 function updateDiagnostics(collection: vscode.DiagnosticCollection) {
+	collection.clear();
 	for (let d = 0; d < vscode.workspace.textDocuments.length; d++) {
 		let document = vscode.workspace.textDocuments[d];
 		if (document && document.languageId === "assembly-tolly") {
@@ -282,17 +283,17 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 						warnings = null;
 					}
 					if (warnings !== null && !Array.isArray(warnings) && "error" in warnings) {
-						console.log('Error from AssEmbly while linting: ' + warnings["error"]);
+						console.error('Error from AssEmbly while linting: ' + warnings["error"]);
 						return;
 					}
 					if (err) {
-						console.log(
+						console.error(
 							'Unexpected error launching AssEmbly executable: ' + err
 							+ ' The following may provide some info: ' + stdout);
 						return;
 					}
 					if (warnings === null) {
-						console.log("An unknown error occurred during AssEmbly linting");
+						console.error("An unknown error occurred during AssEmbly linting");
 						return;
 					}
 
@@ -357,8 +358,11 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(_ => {
 		updateDiagnostics(diagnosticCollection);
 	}));
-	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(_ => {
+	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(_ => {
 		updateDiagnostics(diagnosticCollection);
+	}));
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(_ => {
+		diagnosticCollection.clear();
 	}));
 	updateDiagnostics(diagnosticCollection);
 }
