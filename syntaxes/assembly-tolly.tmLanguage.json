@@ -85,7 +85,7 @@
 			"patterns": [
 				{
 					"name": "constant.character.escape.assembly-tolly",
-					"match": "\\\\\""
+					"match": "\\\\(\"|'|\\\\|0|a|b|f|n|r|t|v|u[0-9A-Fa-f]{4})"
 				}
 			]
 		},
