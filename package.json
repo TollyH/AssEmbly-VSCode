@@ -7,13 +7,10 @@
   "repository": {"type": "git", "url": "https://github.com/TollyH/AssEmbly-VSCode"},
   "version": "2.0.0",
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Programming Languages"
-  ],
-  "activationEvents": [
-    "onLanguage:assembly-tolly"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -54,7 +51,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
+    "@types/vscode": "^1.75.0",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
