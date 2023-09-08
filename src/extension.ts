@@ -176,6 +176,7 @@ const directives = ["PAD", "DAT", "NUM", "IMP", "MAC", "ANALYZER"];
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
 	docString.appendMarkdown(mnemonics[mnemonicName].description);
+	docString.appendMarkdown(`\n\n**This instruction is part of the \`${mnemonics[mnemonicName].extensionSet}\`**`);
 	let operandCombinations = mnemonics[mnemonicName].operandCombinations;
 	if (operandCombinations.length > 0) {
 		docString.appendMarkdown("\n\n### Operand Requirements:\n\n");
