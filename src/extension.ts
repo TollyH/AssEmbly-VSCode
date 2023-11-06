@@ -317,13 +317,23 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			return new vscode.Hover("## Label Definition");
 		}
 		// Numeric literal
-		if (activeParameter[0] >= '0' && activeParameter[0] <= '9') {
+		if ((activeParameter[0] >= '0' && activeParameter[0] <= '9')
+				|| activeParameter[0] === '.' || activeParameter[0] === '-') {
 			let hoverString = new vscode.MarkdownString("## Numeric Literal");
 			if (activeParameter.startsWith("0X")) {
 				hoverString.appendMarkdown("\n\n*`0x`: Hexadecimal number*");
 			}
 			else if (activeParameter.startsWith("0B")) {
 				hoverString.appendMarkdown("\n\n*`0b`: Binary number*");
+			}
+			else if (activeParameter.includes(".") && activeParameter.startsWith("-")) {
+				hoverString.appendMarkdown("\n\n*`-` and `.`: Negative floating point number*");
+			}
+			else if (activeParameter.startsWith("-")) {
+				hoverString.appendMarkdown("\n\n*`-`: Signed negative number*");
+			}
+			else if (activeParameter.includes(".")) {
+				hoverString.appendMarkdown("\n\n*`.`: Floating point number*");
 			}
 			return new vscode.Hover(hoverString);
 		}
