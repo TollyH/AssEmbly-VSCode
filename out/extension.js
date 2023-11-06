@@ -246,7 +246,7 @@ class AssEmblyCompletionItemProvider {
 }
 class AssEmblyHoverProvider {
     provideHover(document, position, token) {
-        let line = document.lineAt(position.line).text;
+        let line = document.lineAt(position.line).text.trim();
         // If cursor is in the middle of a parameter consider the whole parameter
         let commaIndex = line.indexOf(',', position.character);
         let spaceIndex = line.indexOf(' ', position.character);

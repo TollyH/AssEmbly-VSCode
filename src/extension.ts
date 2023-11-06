@@ -269,7 +269,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 
 class AssEmblyHoverProvider implements vscode.HoverProvider {
 	public provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
-		let line = document.lineAt(position.line).text;
+		let line = document.lineAt(position.line).text.trim();
 		// If cursor is in the middle of a parameter consider the whole parameter
 		let commaIndex = line.indexOf(',', position.character);
 		let spaceIndex = line.indexOf(' ', position.character);
