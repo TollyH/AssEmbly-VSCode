@@ -263,7 +263,8 @@ class AssEmblyHoverProvider {
         else {
             endIndex = line.length;
         }
-        let beforeCursor = line.slice(0, endIndex).toUpperCase();
+        let beforeCursorOriginalCase = line.slice(0, endIndex);
+        let beforeCursor = beforeCursorOriginalCase.toUpperCase();
         // Don't provide hover for comments, strings, or empty lines
         if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length === 0) {
             return null;
@@ -272,7 +273,8 @@ class AssEmblyHoverProvider {
         if (!beforeCursor.includes(' ') && mnemonics[beforeCursor] !== undefined) {
             return new vscode.Hover(generateMnemonicDescription(beforeCursor));
         }
-        let activeParameter = beforeCursor.split(' ').slice(-1)[0].split(',').slice(-1)[0];
+        let activeParameterOriginalCase = beforeCursorOriginalCase.split(' ').slice(-1)[0].split(',').slice(-1)[0];
+        let activeParameter = activeParameterOriginalCase.toUpperCase();
         let registerOpFormat = activeParameter.replace(/^\*/, '').toLowerCase();
         // Register
         if (registers[registerOpFormat] !== undefined) {
@@ -293,6 +295,76 @@ class AssEmblyHoverProvider {
         // Label definition
         if (activeParameter[0] === ":") {
             return new vscode.Hover("## Label Definition");
+        }
+        // Character literal
+        if (activeParameter.length >= 3 && activeParameter[0] === '\''
+            && activeParameter[activeParameter.length - 1] === '\'') {
+            let characterLiteral = activeParameterOriginalCase.slice(1, -1);
+            let numericalUtf8;
+            let utf8Bytes;
+            if (characterLiteral[0] === '\\' && characterLiteral.length >= 2) {
+                let escape = characterLiteral[1];
+                switch (escape) {
+                    // Escapes that keep the same character
+                    case '\'':
+                    case '"':
+                    case '\\':
+                        break;
+                    // Escapes that map to another character
+                    case '0':
+                        escape = '\0';
+                        break;
+                    case 'a':
+                        escape = '\a';
+                        break;
+                    case 'b':
+                        escape = '\b';
+                        break;
+                    case 'f':
+                        escape = '\f';
+                        break;
+                    case 'n':
+                        escape = '\n';
+                        break;
+                    case 'r':
+                        escape = '\r';
+                        break;
+                    case 't':
+                        escape = '\t';
+                        break;
+                    case 'v':
+                        escape = '\v';
+                        break;
+                    case 'u': {
+                        if (characterLiteral.length < 6) {
+                            return null;
+                        }
+                        let rawCodePoint = characterLiteral.slice(2);
+                        escape = String.fromCharCode(parseInt(rawCodePoint, 16));
+                        break;
+                    }
+                    case 'U': {
+                        if (characterLiteral.length < 10) {
+                            return null;
+                        }
+                        let rawCodePoint = characterLiteral.slice(2);
+                        escape = String.fromCodePoint(parseInt(rawCodePoint, 16));
+                        break;
+                    }
+                    default:
+                        return null;
+                }
+                utf8Bytes = new TextEncoder().encode(escape);
+            }
+            else {
+                utf8Bytes = new TextEncoder().encode(characterLiteral);
+            }
+            let num = 0n;
+            for (let i = 0; i < utf8Bytes.length; i++) {
+                num += BigInt(utf8Bytes[i]) << BigInt(i * 8);
+            }
+            numericalUtf8 = BigInt.asUintN(64, num);
+            return new vscode.Hover(new vscode.MarkdownString(`## Character Literal\n\n**Numeric value:** \`${numericalUtf8}\``));
         }
         // Numeric literal
         if ((activeParameter[0] >= '0' && activeParameter[0] <= '9')
