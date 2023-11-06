@@ -212,7 +212,7 @@ function generateRegisterDescription(registerName: string): vscode.MarkdownStrin
 class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
 		let completionItems: vscode.CompletionItem[] = [];
-		let beforeCursor = document.lineAt(position.line).text.slice(0, position.character).toUpperCase();
+		let beforeCursor = document.lineAt(position.line).text.slice(0, position.character).toUpperCase().trim();
 		// Don't autocorrect label definitions or comments
 		if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
 			// If this is the first word in the line
@@ -232,7 +232,8 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 			else {
 				let activeParameter = beforeCursor.split(' ').slice(-1)[0].split(',').slice(-1)[0];
 				// If not a label or numeral
-				if (activeParameter[0] !== ':' && (activeParameter[0] < '0' || activeParameter[0] > '9')) {
+				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
+						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
 					// Ignore pointer symbol
 					if (activeParameter[0] === '*') {
 						activeParameter = activeParameter.slice(1);
