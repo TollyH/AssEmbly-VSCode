@@ -15,6 +15,7 @@ const memLocationOperands = [OperandType.Label, OperandType.Pointer];
 const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
+const pointerOperands = [OperandType.Pointer];
 
 class MnemonicInfo {
 	public operandCombinations: OperandType[][];
@@ -143,6 +144,22 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	// Extended base set
 	"EXTD_BSW": new MnemonicInfo([registerOperands], "Extended Base Set", "## Reverse Byte Order"),
 
+	// External assembly extension set
+	"ASMX_LDA": new MnemonicInfo([memLocationOperands], "External Assembly Extension Set", "## Load External Assembly"),
+	"ASMX_LDF": new MnemonicInfo([memLocationOperands], "External Assembly Extension Set", "## Load External Function"),
+	"ASMX_CLA": new MnemonicInfo([], "External Assembly Extension Set", "## Close External Assembly"),
+	"ASMX_CLF": new MnemonicInfo([], "External Assembly Extension Set", "## Close External Function"),
+	"ASMX_AEX": new MnemonicInfo([registerOperands, memLocationOperands], "External Assembly Extension Set", "## External Assembly Valid?"),
+	"ASMX_FEX": new MnemonicInfo([registerOperands, memLocationOperands], "External Assembly Extension Set", "## External Function Valid?"),
+	"ASMX_CAL": new MnemonicInfo([allOperandsOptional], "External Assembly Extension Set", "## Call External Function"),
+
+	// Memory allocation extension set
+	"HEAP_ALC": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Allocate Memory\n\n*Throw error upon failure*"),
+	"HEAP_TRY": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Try Allocate Memory\n\n*Return -1 upon failure*"),
+	"HEAP_REA": new MnemonicInfo([pointerOperands, allOperands], "Memory Allocation Extension Set", "## Re-allocate Memory\n\n*Throw error upon failure*"),
+	"HEAP_TRE": new MnemonicInfo([pointerOperands, allOperands], "Memory Allocation Extension Set", "## Try Re-allocate Memory\n\n*Return -1 upon failure*"),
+	"HEAP_FRE": new MnemonicInfo([pointerOperands], "Memory Allocation Extension Set", "## Free Memory"),
+
 	// Directives
 	"PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
 	"DAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Byte or String"),
@@ -156,7 +173,7 @@ const registers: { [name: string]: string } = {
 	"rpo": "Program Offset",
 	"rso": "Stack Offset",
 	"rsb": "Stack Base",
-	"rsf": "Status Flags\n\n*(Zero Flag, Carry Flag, File End Flag, 61 remaining high bits undefined)*",
+	"rsf": "Status Flags\n\n*(Zero Flag, Carry Flag, File End Flag, Sign Flag, Overflow Flag, 59 remaining high bits undefined)*",
 	"rrv": "Return Value",
 	"rfp": "Fast Pass Parameter",
 	"rg0": "General 0",
