@@ -15,7 +15,6 @@ const memLocationOperands = [OperandType.Label, OperandType.Pointer];
 const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
-const pointerOperands = [OperandType.Pointer];
 
 class MnemonicInfo {
 	public operandCombinations: OperandType[][];
@@ -156,9 +155,9 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	// Memory allocation extension set
 	"HEAP_ALC": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Allocate Memory\n\n*Throw error upon failure*"),
 	"HEAP_TRY": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Try Allocate Memory\n\n*Return -1 upon failure*"),
-	"HEAP_REA": new MnemonicInfo([pointerOperands, allOperands], "Memory Allocation Extension Set", "## Re-allocate Memory\n\n*Throw error upon failure*"),
-	"HEAP_TRE": new MnemonicInfo([pointerOperands, allOperands], "Memory Allocation Extension Set", "## Try Re-allocate Memory\n\n*Return -1 upon failure*"),
-	"HEAP_FRE": new MnemonicInfo([pointerOperands], "Memory Allocation Extension Set", "## Free Memory"),
+	"HEAP_REA": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Re-allocate Memory\n\n*Throw error upon failure*"),
+	"HEAP_TRE": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Try Re-allocate Memory\n\n*Return -1 upon failure*"),
+	"HEAP_FRE": new MnemonicInfo([registerOperands], "Memory Allocation Extension Set", "## Free Memory"),
 
 	// Directives
 	"PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
