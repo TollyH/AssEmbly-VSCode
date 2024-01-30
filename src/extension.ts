@@ -163,9 +163,12 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
 	"DAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Byte or String"),
 	"NUM": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Quad Word (64-bits, 8 bytes)"),
-	"IMP": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import File Contents"),
+	"IMP": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import AssEmbly Source"),
 	"MAC": new MnemonicInfo([], "Assembler Directives", "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*"),
-	"ANALYZER": new MnemonicInfo([], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`.")
+	"ANALYZER": new MnemonicInfo([], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
+	"MESSAGE": new MnemonicInfo([], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is an optional string to use as the content of the message."),
+	"IBF": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import Binary File Contents"),
+	"DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
 };
 
 const registers: { [name: string]: string } = {
@@ -187,7 +190,7 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 };
 
-const directives = ["PAD", "DAT", "NUM", "IMP", "MAC", "ANALYZER"];
+const directives = ["PAD", "DAT", "NUM", "IMP", "MAC", "ANALYZER", "MESSAGE", "IBF", "DEBUG"];
 
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
