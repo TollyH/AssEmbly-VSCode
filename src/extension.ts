@@ -160,15 +160,15 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"HEAP_FRE": new MnemonicInfo([registerOperands], "Memory Allocation Extension Set", "## Free Memory"),
 
 	// Directives
-	"PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
-	"DAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Byte or String"),
-	"NUM": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Quad Word (64-bits, 8 bytes)"),
-	"IMP": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import AssEmbly Source"),
-	"MAC": new MnemonicInfo([], "Assembler Directives", "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*"),
-	"ANALYZER": new MnemonicInfo([], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
-	"MESSAGE": new MnemonicInfo([], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is an optional string to use as the content of the message."),
-	"IBF": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import Binary File Contents"),
-	"DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
+	"%PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
+	"%DAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Byte or String"),
+	"%NUM": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Quad Word (64-bits, 8 bytes)"),
+	"%IMP": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import AssEmbly Source"),
+	"%MAC": new MnemonicInfo([], "Assembler Directives", "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*"),
+	"%ANALYZER": new MnemonicInfo([], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
+	"%MESSAGE": new MnemonicInfo([], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is an optional string to use as the content of the message."),
+	"%IBF": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import Binary File Contents"),
+	"%DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
 };
 
 const registers: { [name: string]: string } = {
@@ -190,7 +190,7 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 };
 
-const directives = ["PAD", "DAT", "NUM", "IMP", "MAC", "ANALYZER", "MESSAGE", "IBF", "DEBUG"];
+const directives = ["%PAD", "%DAT", "%NUM", "%IMP", "%MAC", "%ANALYZER", "%MESSAGE", "%IBF", "%DEBUG"];
 
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
@@ -231,20 +231,21 @@ function generateRegisterDescription(registerName: string): vscode.MarkdownStrin
 class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
 		let completionItems: vscode.CompletionItem[] = [];
-		let beforeCursor = document.lineAt(position.line).text.slice(0, position.character).toUpperCase().trim();
+		let line = document.lineAt(position.line).text;
+		let beforeCursor = line.slice(0, position.character).toUpperCase().trim();
 		// Don't autocorrect label definitions or comments
 		if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
 			// If this is the first word in the line
 			if (!beforeCursor.includes(' ')) {
 				for (let m in mnemonics) {
-					if (m.startsWith(beforeCursor)) {
-						completionItems.push(
-							new vscode.CompletionItem(
-								m, directives.find(x => x === m) !== undefined
-								? vscode.CompletionItemKind.Keyword
-								: vscode.CompletionItemKind.Function
-							)
+					if (m.indexOf(beforeCursor) !== -1) {
+						let item = new vscode.CompletionItem(
+							m, directives.find(x => x === m) !== undefined
+							? vscode.CompletionItemKind.Keyword
+							: vscode.CompletionItemKind.Function,
 						);
+						item.range = new vscode.Range(position.line, line.toUpperCase().indexOf(beforeCursor), position.line, position.character);
+						completionItems.push(item);
 					}
 				}
 			}
