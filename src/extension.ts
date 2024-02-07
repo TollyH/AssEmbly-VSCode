@@ -169,6 +169,7 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"%MESSAGE": new MnemonicInfo([], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is an optional string to use as the content of the message."),
 	"%IBF": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import Binary File Contents"),
 	"%DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
+	"%LABEL_OVERRIDE": new MnemonicInfo([], "Assembler Directives", "## Manually Define Label Address"),
 };
 
 const registers: { [name: string]: string } = {
@@ -190,7 +191,7 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 };
 
-const directives = ["%PAD", "%DAT", "%NUM", "%IMP", "%MAC", "%ANALYZER", "%MESSAGE", "%IBF", "%DEBUG"];
+const directives = ["%PAD", "%DAT", "%NUM", "%IMP", "%MAC", "%ANALYZER", "%MESSAGE", "%IBF", "%DEBUG", "%LABEL_OVERRIDE"];
 
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
