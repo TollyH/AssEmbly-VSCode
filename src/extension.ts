@@ -164,7 +164,8 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"%DAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Byte or String"),
 	"%NUM": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Quad Word (64-bits, 8 bytes)"),
 	"%IMP": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import AssEmbly Source"),
-	"%MAC": new MnemonicInfo([], "Assembler Directives", "## Define Macro\n\n*Note: Macros take two operands, but they can be any arbitrary text, they do not have to be of a defined operand type*"),
+	"%MACRO": new MnemonicInfo([], "Assembler Directives", "## Define Macro\n\n*Give 2 operands to define a single-line macro, or 1 operand to define a multi-line macro.*\n\n*Note: Macro operands can be any arbitrary text, they do not have to be of a defined operand type*"),
+	"%ENDMACRO": new MnemonicInfo([], "Assembler Directives", "## End Multi-line Macro Definition"),
 	"%ANALYZER": new MnemonicInfo([], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
 	"%MESSAGE": new MnemonicInfo([], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is an optional string to use as the content of the message."),
 	"%IBF": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import Binary File Contents"),
@@ -191,7 +192,7 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 };
 
-const directives = ["%PAD", "%DAT", "%NUM", "%IMP", "%MAC", "%ANALYZER", "%MESSAGE", "%IBF", "%DEBUG", "%LABEL_OVERRIDE"];
+const directives = ["%PAD", "%DAT", "%NUM", "%IMP", "%MACRO", "%ENDMACRO", "%ANALYZER", "%MESSAGE", "%IBF", "%DEBUG", "%LABEL_OVERRIDE"];
 
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
