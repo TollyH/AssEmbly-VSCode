@@ -291,14 +291,18 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 
 class AssEmblyHoverProvider implements vscode.HoverProvider {
 	public provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
-		let line = document.lineAt(position.line).text.trim();
+		let rawLine = document.lineAt(position.line).text;
+		let line = rawLine.trimStart();
 		if (line[0] === '!') {
 			// Remove macro disable prefix
-			line = line.substring(1).trim();
+			line = line.substring(1).trimStart();
 		}
+		let indentOffset = rawLine.length - line.length;
+		let charPosition = position.character - indentOffset;
+		line = line.trimEnd();
 		// If cursor is in the middle of a parameter consider the whole parameter
-		let commaIndex = line.indexOf(',', position.character);
-		let spaceIndex = line.indexOf(' ', position.character);
+		let commaIndex = line.indexOf(',', charPosition);
+		let spaceIndex = line.indexOf(' ', charPosition);
 		let endIndex;
 		if (commaIndex !== -1 && spaceIndex !== -1) {
 			endIndex = Math.min(commaIndex, spaceIndex);
