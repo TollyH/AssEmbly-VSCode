@@ -178,6 +178,7 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"%IBF": new MnemonicInfo([stringOperands], "Assembler Directives", "## Import Binary File Contents"),
 	"%DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
 	"%LABEL_OVERRIDE": new MnemonicInfo([literalOperands], "Assembler Directives", "## Manually Define Label Address"),
+	"%STOP": new MnemonicInfo([stringOperandsOptional], "Assembler Directives", "## Stop Assembly"),
 };
 
 const registers: { [name: string]: string } = {
