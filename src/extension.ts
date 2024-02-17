@@ -192,8 +192,6 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 };
 
-const directives = ["%PAD", "%DAT", "%NUM", "%IMP", "%MACRO", "%ENDMACRO", "%ANALYZER", "%MESSAGE", "%IBF", "%DEBUG", "%LABEL_OVERRIDE"];
-
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
 	docString.appendMarkdown(mnemonics[mnemonicName].description);
@@ -242,7 +240,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 				for (let m in mnemonics) {
 					if (m.indexOf(beforeCursor) !== -1) {
 						let item = new vscode.CompletionItem(
-							m, directives.find(x => x === m) !== undefined
+							m, m[0] === '%'
 							? vscode.CompletionItemKind.Keyword
 							: vscode.CompletionItemKind.Function,
 						);
