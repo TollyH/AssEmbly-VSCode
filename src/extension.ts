@@ -6,6 +6,8 @@ enum OperandType {
 	Literal,
 	Label,
 	Pointer,
+	String,
+	Special,
 	Optional
 }
 
@@ -15,6 +17,11 @@ const memLocationOperands = [OperandType.Label, OperandType.Pointer];
 const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
+const literalOrStringOperands = [OperandType.Literal, OperandType.String];
+const stringOperands = [OperandType.String];
+const stringOperandsOptional = [OperandType.String, OperandType.Optional];
+const specialOperands = [OperandType.Special];
+const specialOperandsOptional = [OperandType.Special, OperandType.Optional];
 
 class MnemonicInfo {
 	public operandCombinations: OperandType[][];
@@ -161,16 +168,16 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 
 	// Directives
 	"%PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
-	"%DAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Byte or String"),
+	"%DAT": new MnemonicInfo([literalOrStringOperands], "Assembler Directives", "## Insert Raw Byte or String"),
 	"%NUM": new MnemonicInfo([literalOperands], "Assembler Directives", "## Insert Raw Quad Word (64-bits, 8 bytes)"),
-	"%IMP": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import AssEmbly Source"),
-	"%MACRO": new MnemonicInfo([], "Assembler Directives", "## Define Macro\n\n*Give 2 operands to define a single-line macro, or 1 operand to define a multi-line macro.*\n\n*Note: Macro operands can be any arbitrary text, they do not have to be of a defined operand type*"),
+	"%IMP": new MnemonicInfo([stringOperands], "Assembler Directives", "## Import AssEmbly Source"),
+	"%MACRO": new MnemonicInfo([specialOperands, specialOperandsOptional], "Assembler Directives", "## Define Macro\n\n*Give 2 operands to define a single-line macro, or 1 operand to define a multi-line macro.*\n\n*Note: Macro operands can be any arbitrary text, they do not have to be of a defined operand type*"),
 	"%ENDMACRO": new MnemonicInfo([], "Assembler Directives", "## End Multi-line Macro Definition"),
-	"%ANALYZER": new MnemonicInfo([], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
-	"%MESSAGE": new MnemonicInfo([], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is an optional string to use as the content of the message."),
-	"%IBF": new MnemonicInfo([literalOperands], "Assembler Directives", "## Import Binary File Contents"),
+	"%ANALYZER": new MnemonicInfo([specialOperands, specialOperands, specialOperands], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
+	"%MESSAGE": new MnemonicInfo([specialOperands, stringOperandsOptional], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`."),
+	"%IBF": new MnemonicInfo([stringOperands], "Assembler Directives", "## Import Binary File Contents"),
 	"%DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
-	"%LABEL_OVERRIDE": new MnemonicInfo([], "Assembler Directives", "## Manually Define Label Address"),
+	"%LABEL_OVERRIDE": new MnemonicInfo([literalOperands], "Assembler Directives", "## Manually Define Label Address"),
 };
 
 const registers: { [name: string]: string } = {

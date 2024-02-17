@@ -29,7 +29,7 @@
 			"patterns": [
 				{
 					"name": "meta.preprocessor.assembler.mnemonic.assembly-tolly",
-					"match": "(?i)^[ \t]*!?[ \t]*%(PAD|DAT|NUM|IMP|MACRO|ENDMACRO|ANALYZER|MESSAGE|IBF|DEBUG|LABEL_OVERRIDE)(?= |;|$)"
+					"match": "(?i)^[ \t]*!?[ \t]*%(PAD|DAT|NUM|IMP|MACRO|ENDMACRO|ANALYZER|MESSAGE|IBF|DEBUG|LABEL_OVERRIDE|STOP)(?= |;|$)"
 				},
 				{
 					"name": "keyword.control.operation.mnemonic.assembly-tolly",
