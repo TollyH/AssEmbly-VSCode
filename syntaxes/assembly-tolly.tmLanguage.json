@@ -12,6 +12,9 @@
 			"include": "#labels"
 		},
 		{
+			"include": "#variables"
+		},
+		{
 			"include": "#registers"
 		},
 		{
@@ -81,6 +84,18 @@
 				}
 			]
 		},
+		"variables": {
+			"patterns": [
+				{
+					"name": "variable.name.assembler.variable.assembly-tolly",
+					"match": "(?<!\\\\)@[A-Za-z0-9_]+"
+				},
+				{
+					"name": "constant.language.assembler.constant.assembly-tolly",
+					"match": "(?<!\\\\)@![A-Za-z0-9_]+"
+				}
+			]
+		},
 		"registers": {
 			"patterns": [
 				{
@@ -100,6 +115,9 @@
 			"patterns": [
 				{
 					"include": "#escape-sequence"
+				},
+				{
+					"include": "#variables"
 				}
 			]
 		},
@@ -110,6 +128,9 @@
 			"patterns": [
 				{
 					"include": "#escape-sequence"
+				},
+				{
+					"include": "#variables"
 				}
 			]
 		},
