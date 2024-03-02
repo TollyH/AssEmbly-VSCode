@@ -17,6 +17,7 @@ const memLocationOperands = [OperandType.Label, OperandType.Pointer];
 const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
+const literalOperandsOptional = [OperandType.Literal, OperandType.Optional];
 const literalOrStringOperands = [OperandType.Literal, OperandType.String];
 const stringOperands = [OperandType.String];
 const stringOperandsOptional = [OperandType.String, OperandType.Optional];
@@ -173,12 +174,23 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"%IMP": new MnemonicInfo([stringOperands], "Assembler Directives", "## Import AssEmbly Source"),
 	"%MACRO": new MnemonicInfo([specialOperands, specialOperandsOptional], "Assembler Directives", "## Define Macro\n\n*Give 2 operands to define a single-line macro, or 1 operand to define a multi-line macro.*\n\n*Note: Macro operands can be any arbitrary text, they do not have to be of a defined operand type*"),
 	"%ENDMACRO": new MnemonicInfo([], "Assembler Directives", "## End Multi-line Macro Definition"),
+	"%DELMACRO": new MnemonicInfo([specialOperands], "Assembler Directives", "## Remove Macro\n\n*Note: Macro operands can be any arbitrary text, they do not have to be of a defined operand type*"),
 	"%ANALYZER": new MnemonicInfo([specialOperands, specialOperands, specialOperands], "Assembler Directives", "## Toggle Assembler Warning\n\nFirst operand is one of `error`, `warning`, or `suggestion`.\n\nSecond operand is the numerical code of the message\n\nThe third operand is one of `0`, `1`, or `r`."),
 	"%MESSAGE": new MnemonicInfo([specialOperands, stringOperandsOptional], "Assembler Directives", "## Manually Emit Assembler Message\n\nFirst operand is one of `error`, `warning`, or `suggestion`."),
 	"%IBF": new MnemonicInfo([stringOperands], "Assembler Directives", "## Import Binary File Contents"),
 	"%DEBUG": new MnemonicInfo([], "Assembler Directives", "## Output Assembler State"),
 	"%LABEL_OVERRIDE": new MnemonicInfo([literalOperands], "Assembler Directives", "## Manually Define Label Address"),
 	"%STOP": new MnemonicInfo([stringOperandsOptional], "Assembler Directives", "## Stop Assembly"),
+	"%REPEAT": new MnemonicInfo([literalOperands], "Assembler Directives", "## Repeat Block of Lines"),
+	"%ENDREPEAT": new MnemonicInfo([], "Assembler Directives", "## End Repeat Block"),
+	"%ASM_ONCE": new MnemonicInfo([], "Assembler Directives", "## Only Assemble File Once"),
+	"%DEFINE": new MnemonicInfo([specialOperands, literalOperands], "Assembler Directives", "## Define Assembler Variable\n\nFirst operand is the name of the variable to define without the '@' prefix."),
+	"%UNDEFINE": new MnemonicInfo([specialOperands], "Assembler Directives", "## Remove Assembler Variable\n\nFirst operand is the name of the variable to remove without the '@' prefix."),
+	"%VAROP": new MnemonicInfo([specialOperands, specialOperands, literalOperands], "Assembler Directives", "## Assembler Variable Operation\n\nFirst operand is one of `ADD`, `SUB`, `MUL`, `DIV`, `REM`, `BIT_AND`, `BIT_OR`, `BIT_XOR`, `BIT_NOT`, `AND`, `OR`, `XOR`, `NOT`, `SHL`, or `SHR`.\n\nSecond operand is the name of the variable to operate on without the '@' prefix."),
+	"%IF": new MnemonicInfo([specialOperands, specialOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
+	"%ELSE": new MnemonicInfo([], "Assembler Directives", "## Conditional Assembly Else Block"),
+	"%ELSE_IF": new MnemonicInfo([specialOperands, specialOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly Else If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
+	"%ENDIF": new MnemonicInfo([], "Assembler Directives", "## End Conditional Assembly Block"),
 };
 
 const registers: { [name: string]: string } = {
