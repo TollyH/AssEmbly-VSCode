@@ -525,6 +525,9 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 						: severity === 2
 							? `Warning ${String(warning["Code"]).padStart(4, '0')}`
 							: `Suggestion ${String(warning["Code"]).padStart(4, '0')}`;
+					if (warning["MacroName"] !== "") {
+						messageStart += ` (in macro "${warning["MacroName"]}")`;
+					}
 					if (!(path in newDiagnostics)) {
 						newDiagnostics[path] = [];
 					}
