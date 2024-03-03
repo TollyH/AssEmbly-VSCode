@@ -467,7 +467,9 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 	collection.clear();
 	let document = vscode.window.activeTextEditor?.document;
 	if (document !== undefined && document.languageId === "assembly-tolly") {
-		let warnings;
+		let result: any;
+		let warnings: any;
+		let assembledLines: any;
 		child_process.exec(
 			`${vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath')} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header`,
 			async (err, stdout, _) => {
@@ -476,13 +478,16 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 				}
 				try {
 					console.log(`AssEmbly linter: attempting to decode "${stdout.trim()}"`);
-					warnings = JSON.parse(stdout);
+					result = JSON.parse(stdout);
+					warnings = result["Warnings"];
+					assembledLines = result["AssembledLines"];
 				}
 				catch {
 					warnings = null;
+					assembledLines = null;
 				}
-				if (warnings !== null && !Array.isArray(warnings) && "error" in warnings) {
-					console.error('Error from AssEmbly while linting: ' + warnings["error"]);
+				if (result !== null && "error" in result) {
+					console.error('Error from AssEmbly while linting: ' + result["error"]);
 					return;
 				}
 				if (err) {
@@ -491,18 +496,22 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 						+ ' The following may provide some info: ' + stdout);
 					return;
 				}
-				if (warnings === null) {
+				if (warnings === undefined && Array.isArray(result)) {
+					// If a fatal error occurs, AssEmbly will just give us a single element list instead of a full assembly result
+					warnings = result;
+				}
+				if (result === null || warnings === null) {
 					console.error("An unknown error occurred during AssEmbly linting");
 					return;
 				}
 
-				let warningArray: any[] = warnings;
 				let newDiagnostics: any = {};
-				for (let i = 0; i < warningArray.length; i++) {
-					let warning = warningArray[i];
-					let path = warning["File"];
+
+				for (let i = 0; i < warnings.length; i++) {
+					let warning = warnings[i];
+					let path = warning["Position"]["File"];
 					path = path === "" ? document.uri.fsPath : path;
-					let lineIndex = warning["Line"] - 1;
+					let lineIndex = warning["Position"]["Line"] - 1;
 					let severity = warning["Severity"];
 					let diagnosticSeverity = severity === 0 || severity === 1
 						? vscode.DiagnosticSeverity.Error
@@ -524,6 +533,25 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					newDiagnostics[path].push(new vscode.Diagnostic(new vscode.Range(lineIndex, 0, lineIndex, lineLength),
 						`${messageStart}: ${warning["Message"]}`, diagnosticSeverity));
 				}
+
+				if (Array.isArray(assembledLines)) {
+					if (!(document.uri.fsPath in newDiagnostics)) {
+						newDiagnostics[document.uri.fsPath] = [];
+					}
+					let assembledLineSet = new Set();
+					assembledLines.forEach((l: any) => assembledLineSet.add(l["Line"] - 1));
+					for (let i = 0; i < document.lineCount; i++) {
+						if (!assembledLineSet.has(i)) {
+							let lineLength = document.lineAt(i).text.length;
+							let diag = new vscode.Diagnostic(
+								new vscode.Range(i, 0, i, lineLength),
+								"Line is not assembled", vscode.DiagnosticSeverity.Hint);
+							diag.tags = [vscode.DiagnosticTag.Unnecessary];
+							newDiagnostics[document.uri.fsPath].push(diag);
+						}
+					}
+				}
+
 				for (let path in newDiagnostics) {
 					collection.set(vscode.Uri.file(path), newDiagnostics[path]);
 				}
