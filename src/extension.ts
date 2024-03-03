@@ -212,6 +212,19 @@ const registers: { [name: string]: string } = {
 	"rg9": "General 9"
 };
 
+const assemblerConstants: string[] = [
+	"ASSEMBLER_VERSION_MAJOR",
+	"ASSEMBLER_VERSION_MINOR",
+	"ASSEMBLER_VERSION_PATCH",
+	"COMPAT_VERSION_MAJOR",
+	"COMPAT_VERSION_MINOR",
+	"COMPAT_VERSION_PATCH",
+	"V1_FORMAT",
+	"V1_CALL_STACK",
+	"IMPORT_DEPTH",
+	"CURRENT_ADDRESS"
+];
+
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
 	docString.appendMarkdown(mnemonics[mnemonicName].description);
@@ -274,17 +287,33 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 				// If not a label or numeral
 				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
 						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
-					// Ignore pointer symbol
-					if (activeParameter[0] === '*') {
-						activeParameter = activeParameter.slice(1);
+					// Assembler constants
+					if (activeParameter.startsWith("@!")) {
+						// Remove "@!" prefix
+						activeParameter = activeParameter.slice(2);
+						for (let i = 0; i < assemblerConstants.length; i++) {
+							let c = assemblerConstants[i];
+							if (c.toUpperCase().startsWith(activeParameter)) {
+								completionItems.push(new vscode.CompletionItem(
+									c, vscode.CompletionItemKind.Constant
+								));
+							}
+						}
 					}
-					for (let r in registers) {
-						if (r.toUpperCase().startsWith(activeParameter)) {
-							completionItems.push(
-								new vscode.CompletionItem(
-									r, vscode.CompletionItemKind.Variable
-								)
-							);
+					// Registers
+					else {
+						// Ignore pointer symbol
+						if (activeParameter[0] === '*') {
+							activeParameter = activeParameter.slice(1);
+						}
+						for (let r in registers) {
+							if (r.toUpperCase().startsWith(activeParameter)) {
+								completionItems.push(
+									new vscode.CompletionItem(
+										r, vscode.CompletionItemKind.Variable
+									)
+								);
+							}
 						}
 					}
 				}
@@ -355,8 +384,11 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			}
 			return new vscode.Hover(hoverString);
 		}
-		// Label reference
+		// Label reference/address
 		if (beforeCursor.includes(' ') && activeParameter[0] === ":") {
+			if (activeParameter.length >= 2 && activeParameter[1] >= '0' && activeParameter[1] <= '9') {
+				return new vscode.Hover("## Address Literal");
+			}
 			let hoverString = new vscode.MarkdownString("## Label Reference");
 			if (activeParameter.length > 1 && activeParameter[1] === '&') {
 				hoverString.appendMarkdown("\n\n*`&`: Address corresponding to label will be treated as a literal numeric value*");
@@ -458,6 +490,13 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 				hoverString.appendMarkdown("\n\n*`.`: Floating point number*");
 			}
 			return new vscode.Hover(hoverString);
+		}
+		// Assembler variable/constant
+		if (activeParameter[0] === '@') {
+			if (activeParameter.length >= 2 && activeParameter[1] === '!') {
+				return new vscode.Hover("## Assembler Constant");
+			}
+			return new vscode.Hover("## Assembler Variable");
 		}
 		return null;
 	}
