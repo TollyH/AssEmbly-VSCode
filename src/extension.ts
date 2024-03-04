@@ -590,7 +590,9 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 						newDiagnostics[document.uri.fsPath] = [];
 					}
 					let assembledLineSet = new Set();
-					assembledLines.forEach((l: any) => assembledLineSet.add(l["Line"] - 1));
+					assembledLines
+						.filter((l: any) => l["File"] === "")
+						.forEach((l: any) => assembledLineSet.add(l["Line"] - 1));
 					for (let i = 0; i < document.lineCount; i++) {
 						if (!assembledLineSet.has(i)) {
 							let lineLength = document.lineAt(i).text.length;
