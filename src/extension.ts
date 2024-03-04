@@ -509,8 +509,17 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 		let result: any;
 		let warnings: any;
 		let assembledLines: any;
+		let linterPath = vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath');
+		let macroLimit = vscode.workspace.getConfiguration().get('AssEmblyTolly.lintMacroLimit');
+		let variables: any = vscode.workspace.getConfiguration().get('AssEmblyTolly.lintVariableDefines');
+		let variableString = "";
+		for (let v in variables) {
+			variableString += `${v}:${variables[v]},`;
+		}
+		// Remove trailing comma
+		variableString = variableString.replace(/,$/g, "");
 		child_process.exec(
-			`${vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath')} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header`,
+			`${linterPath} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header --macro-limit=${macroLimit} --define=${variableString}`,
 			async (err, stdout, _) => {
 				if (document === undefined) {
 					return;
@@ -525,7 +534,7 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					warnings = null;
 					assembledLines = null;
 				}
-				if (result !== null && "error" in result) {
+				if (result !== undefined && "error" in result) {
 					console.error('Error from AssEmbly while linting: ' + result["error"]);
 					return;
 				}

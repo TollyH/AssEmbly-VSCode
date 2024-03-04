@@ -36,7 +36,24 @@
           "AssEmblyTolly.linterPath": {
             "type": "string",
             "default": "AssEmbly",
-            "description": "The path to the AssEmbly executable that will provide source code linting. Default requires the executable to be on PATH. Must be version 1.1.0+"
+            "description": "The path to the AssEmbly executable that will provide source code linting. Default requires the executable to be on PATH."
+          },
+          "AssEmblyTolly.lintMacroLimit": {
+            "type": "integer",
+            "default": 1024,
+            "description": "The maximum number of macro expansions that can occur on a single line when linting."
+          },
+          "AssEmblyTolly.lintVariableDefines": {
+            "type": "object",
+            "default": {},
+            "description": "A map of assembler variables to define when linting.",
+            "format": "An object of {string: integer} to map the name of the variable to its value.",
+            "patternProperties": {
+              "^.*$": {"type": "integer"}
+            },
+            "additionalProperties": {
+              "type": "integer"
+            }
           }
         }
       }
