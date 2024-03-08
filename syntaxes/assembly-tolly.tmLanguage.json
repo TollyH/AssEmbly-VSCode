@@ -44,27 +44,27 @@
 			"patterns": [
 				{
 					"name": "constant.numeric.literal.binary.assembly-tolly",
-					"match": "(?i)(?<=\\s|,)0b[0-1_]+?(?=\\s|,|$|;)"
+					"match": "(?i)(?<=\\s|,|\\()0b[0-1_]+?(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "constant.numeric.literal.decimal.assembly-tolly",
-					"match": "(?<=\\s|,)[\\-0-9._][0-9_.]*?(?=\\s|,|$|;)"
+					"match": "(?<=\\s|,|\\()[\\-0-9._][0-9_.]*?(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "constant.numeric.literal.hexadecimal.assembly-tolly",
-					"match": "(?i)(?<=\\s|,)0x[0-9a-f_]+?(?=\\s|,|$|;)"
+					"match": "(?i)(?<=\\s|,|\\()0x[0-9a-f_]+?(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "constant.numeric.literal.decimal.address.assembly-tolly",
-					"match": "(?<=\\s|,):[0-9_]+?(?=\\s|,|$|;)"
+					"match": "(?<=\\s|,|\\():[0-9_]+?(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "constant.numeric.literal.hexadecimal.address.assembly-tolly",
-					"match": "(?i)(?<=\\s|,):0x[0-9a-f_]+?(?=\\s|,|$|;)"
+					"match": "(?i)(?<=\\s|,|\\():0x[0-9a-f_]+?(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "constant.numeric.literal.binary.address.assembly-tolly",
-					"match": "(?i)(?<=\\s|,):0b[0-1_]+?(?=\\s|,|$|;)"
+					"match": "(?i)(?<=\\s|,|\\():0b[0-1_]+?(?=\\s|,|$|;|\\))"
 				}
 			]
 		},
@@ -76,11 +76,11 @@
 				},
 				{
 					"name": "entity.name.class.label.address.literal.assembly-tolly",
-					"match": "(?<!^)(?<=\\s|,):&[A-Za-z_][A-Za-z0-9_]*(?=\\s|,|$|;)"
+					"match": "(?<!^)(?<=\\s|,|\\():&[A-Za-z_][A-Za-z0-9_]*(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "variable.name.label.reference.assembly-tolly",
-					"match": "(?<!^)(?<=\\s|,):[A-Za-z_][A-Za-z0-9_]*?(?=\\s|,|$|;)"
+					"match": "(?<!^)(?<=\\s|,|\\():[A-Za-z_][A-Za-z0-9_]*?(?=\\s|,|$|;|\\))"
 				}
 			]
 		},
@@ -100,11 +100,11 @@
 			"patterns": [
 				{
 					"name": "entity.name.class.register.pointer.assembly-tolly",
-					"match": "(?i)(?<!^)(?<=\\s|,)\\*(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$|;)"
+					"match": "(?i)(?<!^)(?<=\\s|,|\\()\\*(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$|;|\\))"
 				},
 				{
 					"name": "entity.name.function.register.assembly-tolly",
-					"match": "(?i)(?<!^)(?<=\\s|,)(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$|;)"
+					"match": "(?i)(?<!^)(?<=\\s|,|\\()(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$|;|\\))"
 				}
 			]
 		},

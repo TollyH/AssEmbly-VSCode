@@ -266,7 +266,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 		// Don't autocorrect label definitions or comments
 		if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
 			// If this is the first word in the line
-			if (!beforeCursor.includes(' ')) {
+			if (!beforeCursor.includes(' ') && !beforeCursor.includes('(')) {
 				for (let m in mnemonics) {
 					if (m.indexOf(beforeCursor) !== -1) {
 						let item = new vscode.CompletionItem(
@@ -280,7 +280,11 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 				}
 			}
 			else {
-				let activeParameter = beforeCursor.split(' ').slice(-1)[0].split(',').slice(-1)[0];
+				let activeParameter = beforeCursor
+					.split(' ').slice(-1)[0]
+					.split(',').slice(-1)[0]
+					.split('(').slice(-1)[0]
+					.split(')')[0];
 				// If not a label or numeral
 				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
 						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
@@ -360,7 +364,9 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		else {
 			endIndex = line.length;
 		}
-		let beforeCursorOriginalCase = line.slice(0, endIndex);
+		let beforeCursorOriginalCase = line.slice(0, endIndex)
+			.split('(').slice(-1)[0]
+			.split(')')[0];
 		let beforeCursor = beforeCursorOriginalCase.toUpperCase();
 		// Don't provide hover for comments, strings, or empty lines
 		if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length === 0) {
