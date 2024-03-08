@@ -23,6 +23,7 @@ const stringOperands = [OperandType.String];
 const stringOperandsOptional = [OperandType.String, OperandType.Optional];
 const specialOperands = [OperandType.Special];
 const specialOperandsOptional = [OperandType.Special, OperandType.Optional];
+const specialLiteralOperands = [OperandType.Special, OperandType.Literal];
 
 class MnemonicInfo {
 	public operandCombinations: OperandType[][];
@@ -187,9 +188,9 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"%DEFINE": new MnemonicInfo([specialOperands, literalOperands], "Assembler Directives", "## Define Assembler Variable\n\nFirst operand is the name of the variable to define without the '@' prefix."),
 	"%UNDEFINE": new MnemonicInfo([specialOperands], "Assembler Directives", "## Remove Assembler Variable\n\nFirst operand is the name of the variable to remove without the '@' prefix."),
 	"%VAROP": new MnemonicInfo([specialOperands, specialOperands, literalOperands], "Assembler Directives", "## Assembler Variable Operation\n\nFirst operand is one of `ADD`, `SUB`, `MUL`, `DIV`, `REM`, `BIT_AND`, `BIT_OR`, `BIT_XOR`, `BIT_NOT`, `AND`, `OR`, `XOR`, `NOT`, `SHL`, or `SHR`.\n\nSecond operand is the name of the variable to operate on without the '@' prefix."),
-	"%IF": new MnemonicInfo([specialOperands, specialOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
+	"%IF": new MnemonicInfo([specialOperands, specialLiteralOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix for the `DEF` and `NDEF` operations, or a literal to compare with the third operand for the other operations.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
 	"%ELSE": new MnemonicInfo([], "Assembler Directives", "## Conditional Assembly Else Block"),
-	"%ELSE_IF": new MnemonicInfo([specialOperands, specialOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly Else If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
+	"%ELSE_IF": new MnemonicInfo([specialOperands, specialLiteralOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly Else If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix for the `DEF` and `NDEF` operations, or a literal to compare with the third operand for the other operations.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
 	"%ENDIF": new MnemonicInfo([], "Assembler Directives", "## End Conditional Assembly Block"),
 };
 
