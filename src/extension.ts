@@ -4,17 +4,17 @@ import * as child_process from 'child_process';
 enum OperandType {
 	Register,
 	Literal,
-	Label,
+	Address,
 	Pointer,
 	String,
 	Special,
 	Optional
 }
 
-const allOperands = [OperandType.Register, OperandType.Literal, OperandType.Label, OperandType.Pointer];
-const allOperandsOptional = [OperandType.Register, OperandType.Literal, OperandType.Label, OperandType.Pointer, OperandType.Optional];
-const memLocationOperands = [OperandType.Label, OperandType.Pointer];
-const writableOperands = [OperandType.Register, OperandType.Label, OperandType.Pointer];
+const allOperands = [OperandType.Register, OperandType.Literal, OperandType.Address, OperandType.Pointer];
+const allOperandsOptional = [OperandType.Register, OperandType.Literal, OperandType.Address, OperandType.Pointer, OperandType.Optional];
+const memLocationOperands = [OperandType.Address, OperandType.Pointer];
+const writableOperands = [OperandType.Register, OperandType.Address, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
 const literalOperands = [OperandType.Literal];
 const literalOperandsOptional = [OperandType.Literal, OperandType.Optional];
