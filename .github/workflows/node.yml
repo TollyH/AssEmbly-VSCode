@@ -1,0 +1,38 @@
+name: NodeJS with VSCE
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Install dependencies
+      run: |
+        npm install -g @vscode/vsce
+        npm install
+
+    - name: Build
+      run: 
+        vsce package --skip-license -o assembly-tolly.vsix
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: assembly-tolly-${{ matrix.node-version }}
+        path: assembly-tolly.vsix
+        if-no-files-found: error
