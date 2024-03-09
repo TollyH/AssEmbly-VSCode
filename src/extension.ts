@@ -268,6 +268,10 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 		if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
 			// If this is the first word in the line
 			if (!beforeCursor.includes(' ') && !beforeCursor.includes('(')) {
+				if (beforeCursor[0] === '!') {
+					// Remove macro disable prefix
+					beforeCursor = beforeCursor.substring(1).trimStart();
+				}
 				for (let m in mnemonics) {
 					if (m.indexOf(beforeCursor) !== -1) {
 						let item = new vscode.CompletionItem(
