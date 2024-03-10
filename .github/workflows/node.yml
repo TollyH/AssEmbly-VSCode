@@ -28,7 +28,7 @@ jobs:
 
     - name: Build
       run: 
-        vsce package --skip-license -o assembly-tolly.vsix
+        vsce package -o assembly-tolly.vsix
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
