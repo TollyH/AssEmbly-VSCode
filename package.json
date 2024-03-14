@@ -55,6 +55,11 @@
             "additionalProperties": {
               "type": "integer"
             }
+          },
+          "AssEmblyTolly.lintBaseFileOverride": {
+            "type": "string",
+            "default": null,
+            "description": "The path to use as the base file when linting. By default the currently open file is used."
           }
         }
       }

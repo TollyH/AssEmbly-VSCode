@@ -517,17 +517,24 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 		let result: any;
 		let warnings: any;
 		let assembledLines: any;
-		let linterPath = vscode.workspace.getConfiguration().get('AssEmblyTolly.linterPath');
-		let macroLimit = vscode.workspace.getConfiguration().get('AssEmblyTolly.lintMacroLimit');
-		let variables: any = vscode.workspace.getConfiguration().get('AssEmblyTolly.lintVariableDefines');
+
+		let configuration = vscode.workspace.getConfiguration();
+		let linterPath: string | null | undefined = configuration.get('AssEmblyTolly.linterPath');
+		let filePathOverride: string | null | undefined = configuration.get('AssEmblyTolly.lintBaseFileOverride');
+		let macroLimit: number | null | undefined = configuration.get('AssEmblyTolly.lintMacroLimit');
+
+		let filePath: string = filePathOverride || document.uri.fsPath;
+
+		let variables: any = configuration.get('AssEmblyTolly.lintVariableDefines');
 		let variableString = "";
+
 		for (let v in variables) {
 			variableString += `${v}:${variables[v]},`;
 		}
 		// Remove trailing comma
 		variableString = variableString.replace(/,$/g, "");
 		child_process.exec(
-			`${linterPath} lint "${document.uri.fsPath.replace(/"/g, '\\"')}" --no-header --macro-limit=${macroLimit} --define=${variableString}`,
+			`${linterPath} lint "${filePath.replace(/"/g, '\\"')}" --no-header --macro-limit=${macroLimit} --define=${variableString}`,
 			async (err, stdout, _) => {
 				if (document === undefined) {
 					return;
@@ -565,8 +572,8 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 
 				for (let i = 0; i < warnings.length; i++) {
 					let warning = warnings[i];
-					let path = warning["Position"]["File"];
-					path = path === "" ? document.uri.fsPath : path;
+					let path_str = warning["Position"]["File"];
+					let path: vscode.Uri = vscode.Uri.file(path_str === "" ? filePath : path_str);
 					let lineIndex = warning["Position"]["Line"] - 1;
 					let severity = warning["Severity"];
 					let diagnosticSeverity = severity === 0 || severity === 1
@@ -584,12 +591,12 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					if (warning["MacroName"] !== "") {
 						messageStart += ` (in macro "${warning["MacroName"]}")`;
 					}
-					if (!(path in newDiagnostics)) {
-						newDiagnostics[path] = [];
+					if (!(path.fsPath in newDiagnostics)) {
+						newDiagnostics[path.fsPath] = [];
 					}
-					let doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
+					let doc = await vscode.workspace.openTextDocument(path);
 					let lineLength = doc.lineAt(lineIndex).text.length;
-					newDiagnostics[path].push(new vscode.Diagnostic(new vscode.Range(lineIndex, 0, lineIndex, lineLength),
+					newDiagnostics[path.fsPath].push(new vscode.Diagnostic(new vscode.Range(lineIndex, 0, lineIndex, lineLength),
 						`${messageStart}: ${warning["Message"]}`, diagnosticSeverity));
 				}
 
