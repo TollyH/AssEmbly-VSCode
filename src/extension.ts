@@ -192,6 +192,8 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"%ELSE": new MnemonicInfo([], "Assembler Directives", "## Conditional Assembly Else Block"),
 	"%ELSE_IF": new MnemonicInfo([specialOperands, specialLiteralOperands, literalOperandsOptional], "Assembler Directives", "## Conditional Assembly Else If Block\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix for the `DEF` and `NDEF` operations, or a literal to compare with the third operand for the other operations.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
 	"%ENDIF": new MnemonicInfo([], "Assembler Directives", "## End Conditional Assembly Block"),
+	"%WHILE": new MnemonicInfo([specialOperands, specialLiteralOperands, literalOperandsOptional], "Assembler Directives", "## Conditionally Repeat Block of Lines\n\nFirst operand is one of `DEF`, `NDEF`, `EQ`, `NEQ`, `GT`, `GTE`, `LT`, or `LTE`.\n\nSecond operand is the name of the variable to check without the '@' prefix for the `DEF` and `NDEF` operations, or a literal to compare with the third operand for the other operations.\n\nThird operand should not be given for the `DEF` and `NDEF` operations."),
+	"%ENDWHILE": new MnemonicInfo([], "Assembler Directives", "## End While Block"),
 };
 
 const registers: { [name: string]: string } = {
