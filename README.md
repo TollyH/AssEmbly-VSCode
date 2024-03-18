@@ -14,35 +14,35 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 - `❌` - Currently not supported - but could be in the future
 - `-` - Currently not supported, and is not applicable to be supported
 
-| Element                     | Syntax highlighting | Hover description | Autocompletion|
-|-----------------------------|---------------------|-------------------|---------------|
-| **Mnemonics**               |                     |                   |               |
-|   Directives                | ✔️                  | ✔️                | ✔️            |
-|   Instructions              | ✔️                  | ✔️                | ✔️            |
-| **Registers**               |                     |                   |               |
-|   Regular                   | ✔️                  | ✔️                | ✔️            |
-|   Pointers                  | ✔️                  | ✔️                | ✔️            |
-| **Labels**                  |                     |                   |               |
-|   Definitions               | ✔️                  | ✔️                | -             |
-|   References                | ✔️                  | ✔️                | ❌            |
-|   Literal references        | ✔️                  | ✔️                | ❌            |
-| **Literals**                |                     |                   |               |
-|   Numeric                   | ✔️                  | ✔️                | -             |
-|   Address                   | ✔️                  | ✔️                | -             |
-|   Character                 | ✔️                  | ✔️                | -             |
-|   String                    | ✔️                  | ❌                | -             |
-|   Escape sequences          | ✔️                  | ❌                | ❌            |
-|   Import paths              | -                   | ❌                | ❌            |
-| **Assembler Variables**     |                     |                   |               |
-|   Variables                 | ✔️                  | ✔️                | ❌            |
-|   Constants                 | ✔️                  | ✔️                | ✔️            |
-|   `%VAROP`/`%IF` operations | ❌                  | ❌                | ❌            |
-| **Macros**                  |                     |                   |               |
-|   Single-line macro use     | ❌                  | ❌                | ❌            |
-|   Multi-line macro use      | ❌                  | ❌                | ❌            |
-|   Parameter references      | ❌                  | ❌                | -             |
-| **Other**                   |                     |                   |               |
-|   Comments                  | ✔️                  | ❌                | -             |
+| Element                              | Syntax highlighting | Hover description | Autocompletion|
+|--------------------------------------|---------------------|-------------------|---------------|
+| **Mnemonics**                        |                     |                   |               |
+|   Directives                         | ✔️                  | ✔️                | ✔️            |
+|   Instructions                       | ✔️                  | ✔️                | ✔️            |
+| **Registers**                        |                     |                   |               |
+|   Regular                            | ✔️                  | ✔️                | ✔️            |
+|   Pointers                           | ✔️                  | ✔️                | ✔️            |
+| **Labels**                           |                     |                   |               |
+|   Definitions                        | ✔️                  | ✔️                | -             |
+|   References                         | ✔️                  | ✔️                | ❌            |
+|   Literal references                 | ✔️                  | ✔️                | ❌            |
+| **Literals**                         |                     |                   |               |
+|   Numeric                            | ✔️                  | ✔️                | -             |
+|   Address                            | ✔️                  | ✔️                | -             |
+|   Character                          | ✔️                  | ✔️                | -             |
+|   String                             | ✔️                  | ❌                | -             |
+|   Escape sequences                   | ✔️                  | ❌                | ❌            |
+|   Import paths                       | -                   | ❌                | ❌            |
+| **Assembler Variables**              |                     |                   |               |
+|   Variables                          | ✔️                  | ✔️                | ❌            |
+|   Constants                          | ✔️                  | ✔️                | ✔️            |
+|   `%VAROP`/`%IF`/`%WHILE` operations | ❌                  | ❌                | ❌            |
+| **Macros**                           |                     |                   |               |
+|   Single-line macro use              | ❌                  | ❌                | ❌            |
+|   Multi-line macro use               | ❌                  | ❌                | ❌            |
+|   Parameter references               | ❌                  | ❌                | -             |
+| **Other**                            |                     |                   |               |
+|   Comments                           | ✔️                  | ❌                | -             |
 
 ---
 
