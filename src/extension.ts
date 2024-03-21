@@ -69,10 +69,10 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"RNG": new MnemonicInfo([registerOperands], "Base Instruction Set", "## Random Number"),
 	"TST": new MnemonicInfo([registerOperands, allOperands], "Base Instruction Set", "## Test (Discarded Bitwise And)"),
 	"CMP": new MnemonicInfo([registerOperands, allOperands], "Base Instruction Set", "## Compare (Discarded Subtraction)"),
-	"MVB": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Byte (8-bits)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
-	"MVW": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Word (16-bits, 2 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
-	"MVD": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Double Word (32-bits, 4 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
-	"MVQ": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Quad Word (64-bits, 8 bytes)\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
+	"MVB": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Byte (8-bits)\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
+	"MVW": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Word (16-bits, 2 bytes)\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
+	"MVD": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Double Word (32-bits, 4 bytes)\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
+	"MVQ": new MnemonicInfo([writableOperands, allOperands], "Base Instruction Set", "## Move Quad Word (64-bits, 8 bytes)\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
 	"PSH": new MnemonicInfo([allOperands], "Base Instruction Set", "## Push to Stack"),
 	"POP": new MnemonicInfo([registerOperands], "Base Instruction Set", "## Pop from Stack"),
 	"CAL": new MnemonicInfo([memLocationOperands, allOperandsOptional], "Base Instruction Set", "## Call Subroutine"),
@@ -106,9 +106,9 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"SIGN_DVR": new MnemonicInfo([registerOperands, registerOperands, allOperands], "Signed Extension Set", "## Divide (With Remainder)"),
 	"SIGN_REM": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Remainder"),
 	"SIGN_SHR": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Arithmetic Shift Right"),
-	"SIGN_MVB": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Move Byte (8-bits) and Extend Sign to 64-bits\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
-	"SIGN_MVW": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Move Word (16-bits, 2 bytes) and Extend Sign to 64-bits\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
-	"SIGN_MVD": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Move Double Word (32-bits, 4 bytes) and Extend Sign to 64-bits\n\n*Note: If the destination operand is a label or pointer, the source must be a register or literal*"),
+	"SIGN_MVB": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Move Byte (8-bits) and Extend Sign to 64-bits\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
+	"SIGN_MVW": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Move Word (16-bits, 2 bytes) and Extend Sign to 64-bits\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
+	"SIGN_MVD": new MnemonicInfo([registerOperands, allOperands], "Signed Extension Set", "## Move Double Word (32-bits, 4 bytes) and Extend Sign to 64-bits\n\n*Note: If the destination operand is an address or pointer, the source must be a register or literal*"),
 	"SIGN_WCN": new MnemonicInfo([allOperands], "Signed Extension Set", "## Write Number (64-bit) to Console"),
 	"SIGN_WCB": new MnemonicInfo([allOperands], "Signed Extension Set", "## Write Numeric Byte to Console"),
 	"SIGN_WFN": new MnemonicInfo([allOperands], "Signed Extension Set", "## Write Number (64-bit) to File"),
@@ -292,7 +292,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					.split(',').slice(-1)[0]
 					.split('(').slice(-1)[0]
 					.split(')')[0];
-				// If not a label or numeral
+				// If not a label/address or numeral
 				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
 						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
 					// Assembler constants
