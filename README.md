@@ -48,4 +48,4 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 
 **Copyright © 2022–2024  Ptolemy Hill**
 
-**Licensed under GPLv3 - see the LICENSE file for more details**
+**Licensed under GPLv3. The full license text can be found in the LICENSE file, or at <https://www.gnu.org/licenses/gpl-3.0.html>**
