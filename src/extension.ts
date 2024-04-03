@@ -521,13 +521,14 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 		let assembledLines: any;
 
 		let configuration = vscode.workspace.getConfiguration();
-		let linterPath: string | null | undefined = configuration.get('AssEmblyTolly.linterPath');
-		let filePathOverride: string | null | undefined = configuration.get('AssEmblyTolly.lintBaseFileOverride');
-		let macroLimit: number | null | undefined = configuration.get('AssEmblyTolly.lintMacroLimit');
+		let linterPath: string | null | undefined = configuration.get('assembly-tolly.linting.linterPath');
+		let filePathOverride: string | null | undefined = configuration.get('assembly-tolly.linting.baseFileOverride');
+		let macroLimit: number | null | undefined = configuration.get('assembly-tolly.linting.macroLimit');
+		let whileRepeatLimit: number | null | undefined = configuration.get('assembly-tolly.linting.whileRepeatLimit');
 
 		let filePath: string = filePathOverride || document.uri.fsPath;
 
-		let variables: any = configuration.get('AssEmblyTolly.lintVariableDefines');
+		let variables: any = configuration.get('assembly-tolly.linting.variableDefines');
 		let variableString = "";
 
 		for (let v in variables) {
@@ -535,8 +536,18 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 		}
 		// Remove trailing comma
 		variableString = variableString.replace(/,$/g, "");
+		let commandLine = `${linterPath} lint "${filePath.replace(/"/g, '\\"')}" --no-header --macro-limit=${macroLimit} --while-limit=${whileRepeatLimit} --define=${variableString}`;
+		if (configuration.get("assembly-tolly.linting.enableObsoleteDirectives")) {
+			commandLine += " --allow-old-directives";
+		}
+		if (configuration.get("assembly-tolly.linting.disableVariableExpansion")) {
+			commandLine += " --disable-variables";
+		}
+		if (configuration.get("assembly-tolly.linting.disableEscapeSequences")) {
+			commandLine += " --disable-escapes";
+		}
 		child_process.exec(
-			`${linterPath} lint "${filePath.replace(/"/g, '\\"')}" --no-header --macro-limit=${macroLimit} --define=${variableString}`,
+			commandLine,
 			async (err, stdout, _) => {
 				if (document === undefined) {
 					return;

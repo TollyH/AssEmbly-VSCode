@@ -34,17 +34,31 @@
       {
         "title": "AssEmbly",
         "properties": {
-          "AssEmblyTolly.linterPath": {
+          "assembly-tolly.linting.linterPath": {
             "type": "string",
             "default": "AssEmbly",
-            "description": "The path to the AssEmbly executable that will provide source code linting. Default requires the executable to be on PATH."
+            "description": "The path to the AssEmbly executable that will provide source code linting. Default requires the executable to be on PATH.",
+            "order": 0
           },
-          "AssEmblyTolly.lintMacroLimit": {
+          "assembly-tolly.linting.baseFileOverride": {
+            "type": "string",
+            "default": null,
+            "description": "The path to use as the base file when linting. By default the currently open file is used.",
+            "order": 10
+          },
+          "assembly-tolly.linting.macroLimit": {
             "type": "integer",
             "default": 1024,
-            "description": "The maximum number of macro expansions that can occur on a single line when linting."
+            "description": "The maximum number of macro expansions that can occur on a single line when linting.",
+            "order": 20
           },
-          "AssEmblyTolly.lintVariableDefines": {
+          "assembly-tolly.linting.whileRepeatLimit": {
+            "type": "integer",
+            "default": 16384,
+            "description": "The maximum number of %WHILE repetitions that can occur throughout the entire linting assembly process.",
+            "order": 30
+          },
+          "assembly-tolly.linting.variableDefines": {
             "type": "object",
             "default": {},
             "description": "A map of assembler variables to define when linting.",
@@ -54,12 +68,26 @@
             },
             "additionalProperties": {
               "type": "integer"
-            }
+            },
+            "order": 40
           },
-          "AssEmblyTolly.lintBaseFileOverride": {
-            "type": "string",
-            "default": null,
-            "description": "The path to use as the base file when linting. By default the currently open file is used."
+          "assembly-tolly.linting.enableObsoleteDirectives": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable the use of replaced assembler directives (e.g. DAT, IMP, MAC instead of %DAT, %IMP, %MACRO) within the program when linting. Ensures compatibility with programs written for versions prior to 3.2.0.",
+            "order": 50
+          },
+          "assembly-tolly.linting.disableVariableExpansion": {
+            "type": "boolean",
+            "default": false,
+            "description": "Disable the expansion of assembler variables and constants within the program when linting. Ensures compatibility with programs written for versions prior to 3.2.0.",
+            "order": 60
+          },
+          "assembly-tolly.linting.disableEscapeSequences": {
+            "type": "boolean",
+            "default": false,
+            "description": "Disable the use of escape sequences in strings when linting. Ensures compatibility with programs written for versions prior to 1.1.0.",
+            "order": 70
           }
         }
       }
