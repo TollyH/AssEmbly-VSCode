@@ -222,7 +222,9 @@ const assemblerConstants: string[] = [
 	"V1_FORMAT",
 	"V1_CALL_STACK",
 	"IMPORT_DEPTH",
-	"CURRENT_ADDRESS"
+	"CURRENT_ADDRESS",
+	"OBSOLETE_DIRECTIVES",
+	"ESCAPE_SEQUENCES"
 ];
 
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
