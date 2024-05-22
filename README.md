@@ -22,10 +22,12 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 | **Registers**                        |                     |                   |               |
 |   Regular                            | ✔️                  | ✔️                | ✔️            |
 |   Pointers                           | ✔️                  | ✔️                | ✔️            |
+|   Displacement                       | ✔️                  | ✔️                | ✔️            |
 | **Labels**                           |                     |                   |               |
 |   Definitions                        | ✔️                  | ✔️                | -             |
 |   References                         | ✔️                  | ✔️                | ❌            |
 |   Literal references                 | ✔️                  | ✔️                | ❌            |
+|   Displacement                       | ✔️                  | ✔️                | ✔️            |
 | **Literals**                         |                     |                   |               |
 |   Numeric                            | ✔️                  | ✔️                | -             |
 |   Address                            | ✔️                  | ✔️                | -             |

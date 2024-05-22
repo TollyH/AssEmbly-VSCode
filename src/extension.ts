@@ -299,7 +299,9 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					.split(' ').slice(-1)[0]
 					.split(',').slice(-1)[0]
 					.split('(').slice(-1)[0]
-					.split(')')[0];
+					.split(')')[0]
+					.split('[').slice(-1)[0]
+					.split(']')[0];
 				// If not a label/address or numeral
 				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
 						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
@@ -379,9 +381,13 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		// If cursor is in the middle of a parameter consider the whole parameter
 		let commaIndex = line.indexOf(',', charPosition);
 		let spaceIndex = line.indexOf(' ', charPosition);
+		let bracketIndex = line.indexOf('[', charPosition);
 		let endIndex;
-		if (commaIndex !== -1 && spaceIndex !== -1) {
+		if (commaIndex !== -1 && spaceIndex !== -1 && bracketIndex === -1) {
 			endIndex = Math.min(commaIndex, spaceIndex);
+		}
+		else if (bracketIndex !== -1 && bracketIndex >= charPosition) {
+			endIndex = bracketIndex;
 		}
 		else if (commaIndex !== -1) {
 			endIndex = commaIndex;
@@ -394,7 +400,9 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		let beforeCursorOriginalCase = line.slice(0, endIndex)
 			.split('(').slice(-1)[0]
-			.split(')')[0];
+			.split(')')[0]
+			.split('[').slice(-1)[0]
+			.split(']')[0];
 		let beforeCursor = beforeCursorOriginalCase.toUpperCase();
 		// Don't provide hover for comments, strings, or empty lines
 		if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length === 0) {
@@ -413,16 +421,26 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			if (activeParameter[0] === '*') {
 				hoverString.appendMarkdown("\n\n*`\*`: Register contents will be treated as a pointer to address in memory*");
 			}
+			if (endIndex < line.length && line[endIndex] === '[') {
+				hoverString.appendMarkdown("\n\n*`[...]`: Contents of the square brackets will be added to the register value at runtime to get the final address*");
+			}
 			return new vscode.Hover(hoverString);
 		}
 		// Label reference/address
 		if (beforeCursor.includes(' ') && activeParameter[0] === ":") {
 			if (activeParameter.length >= 2 && activeParameter[1] >= '0' && activeParameter[1] <= '9') {
-				return new vscode.Hover("## Address Literal");
+				let hoverString = new vscode.MarkdownString("## Address Literal");
+				if (endIndex < line.length && line[endIndex] === '[') {
+					hoverString.appendMarkdown("\n\n*`[...]`: Contents of the square brackets will be added to the address value at assemble-time to get the final address*");
+				}
+				return new vscode.Hover(hoverString);
 			}
 			let hoverString = new vscode.MarkdownString("## Label Reference");
 			if (activeParameter.length > 1 && activeParameter[1] === '&') {
 				hoverString.appendMarkdown("\n\n*`&`: Address corresponding to label will be treated as a literal numeric value*");
+			}
+			if (endIndex < line.length && line[endIndex] === '[') {
+				hoverString.appendMarkdown("\n\n*`[...]`: Contents of the square brackets will be added to the label value at assemble-time to get the final address*");
 			}
 			return new vscode.Hover(hoverString);
 		}
