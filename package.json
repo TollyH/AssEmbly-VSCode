@@ -88,6 +88,12 @@
             "default": false,
             "description": "Disable the use of escape sequences in strings when linting. Ensures compatibility with programs written for versions prior to 1.1.0.",
             "order": 70
+          },
+          "assembly-tolly.linting.disableFileMacros": {
+            "type": "boolean",
+            "default": false,
+            "description": "Disable the use of automatically defined file macros (e.g. #FILE_PATH) when linting. Ensures compatibility with programs written for versions prior to 4.0.0.",
+            "order": 80
           }
         }
       }

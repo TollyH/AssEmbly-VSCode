@@ -575,6 +575,9 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 		if (configuration.get("assembly-tolly.linting.disableEscapeSequences")) {
 			commandLine += " --disable-escapes";
 		}
+		if (configuration.get("assembly-tolly.linting.disableFileMacros")) {
+			commandLine += " --disable-file-macros";
+		}
 		child_process.exec(
 			commandLine,
 			async (err, stdout, _) => {
