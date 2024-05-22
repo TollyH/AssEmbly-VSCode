@@ -1,4 +1,4 @@
-# AssEmbly Visual Studio Code Extension
+# AssEmbly Visual Studio Code Extension [![NodeJS with VSCE](https://github.com/TollyH/AssEmbly-VSCode/actions/workflows/node.yml/badge.svg)](https://github.com/TollyH/AssEmbly-VSCode/actions/workflows/node.yml)
 
 A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly) providing the following features:
 
