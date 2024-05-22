@@ -227,6 +227,12 @@ const assemblerConstants: string[] = [
 	"ESCAPE_SEQUENCES"
 ];
 
+const predefinedMacros: string[] = [
+	"FILE_PATH",
+	"FILE_NAME",
+	"FOLDER_PATH"
+];
+
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
 	docString.appendMarkdown(mnemonics[mnemonicName].description);
@@ -303,6 +309,19 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						activeParameter = activeParameter.slice(2);
 						for (let i = 0; i < assemblerConstants.length; i++) {
 							let c = assemblerConstants[i];
+							if (c.toUpperCase().startsWith(activeParameter)) {
+								completionItems.push(new vscode.CompletionItem(
+									c, vscode.CompletionItemKind.Constant
+								));
+							}
+						}
+					}
+					// Predefined macros
+					else if (activeParameter.startsWith('#')) {
+						// Remove "#" prefix
+						activeParameter = activeParameter.slice(1);
+						for (let i = 0; i < predefinedMacros.length; i++) {
+							let c = predefinedMacros[i];
 							if (c.toUpperCase().startsWith(activeParameter)) {
 								completionItems.push(new vscode.CompletionItem(
 									c, vscode.CompletionItemKind.Constant
@@ -509,6 +528,14 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 				return new vscode.Hover("## Assembler Constant");
 			}
 			return new vscode.Hover("## Assembler Variable");
+		}
+		if (activeParameter[0] === '#') {
+			let macro = activeParameter.slice(1);
+			for (let i = 0; i < predefinedMacros.length; i++) {
+				if (macro.startsWith(predefinedMacros[i])) {
+					return new vscode.Hover("## Pre-defined Macro");
+				}
+			}
 		}
 		return null;
 	}
