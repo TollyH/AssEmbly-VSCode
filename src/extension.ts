@@ -14,11 +14,15 @@ enum OperandType {
 const allOperands = [OperandType.Register, OperandType.Literal, OperandType.Address, OperandType.Pointer];
 const allOperandsOptional = [OperandType.Register, OperandType.Literal, OperandType.Address, OperandType.Pointer, OperandType.Optional];
 const memLocationOperands = [OperandType.Address, OperandType.Pointer];
+const memLocationOperandsOptional = [OperandType.Address, OperandType.Pointer, OperandType.Optional];
 const writableOperands = [OperandType.Register, OperandType.Address, OperandType.Pointer];
 const registerOperands = [OperandType.Register];
+const registerOperandsOptional = [OperandType.Register, OperandType.Optional];
 const literalOperands = [OperandType.Literal];
 const literalOperandsOptional = [OperandType.Literal, OperandType.Optional];
 const literalOrStringOperands = [OperandType.Literal, OperandType.String];
+const registerOrLiteralOperands = [OperandType.Register, OperandType.Literal];
+const pointerOperands = [OperandType.Pointer];
 const stringOperands = [OperandType.String];
 const stringOperandsOptional = [OperandType.String, OperandType.Optional];
 const specialOperands = [OperandType.Special];
@@ -151,6 +155,11 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 
 	// Extended base set
 	"EXTD_BSW": new MnemonicInfo([registerOperands], "Extended Base Set", "## Reverse Byte Order"),
+	"EXTD_QPF": new MnemonicInfo([registerOperands], "Extended Base Set", "## Query Present Features"),
+	"EXTD_QPV": new MnemonicInfo([registerOperands, registerOperandsOptional], "Extended Base Set", "## Query Present Version"),
+	"EXTD_CSS": new MnemonicInfo([registerOperands, registerOperandsOptional], "Extended Base Set", "## Query Call Stack Size"),
+	"EXTD_HLT": new MnemonicInfo([allOperands], "Extended Base Set", "## Halt With Exit Code"),
+	"EXTD_MPA": new MnemonicInfo([writableOperands, pointerOperands], "Extended Base Set", "## Move Pointer Address"),
 
 	// External assembly extension set
 	"ASMX_LDA": new MnemonicInfo([memLocationOperands], "External Assembly Extension Set", "## Load External Assembly"),
@@ -167,6 +176,40 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"HEAP_REA": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Re-allocate Memory\n\n*Throw error upon failure*"),
 	"HEAP_TRE": new MnemonicInfo([registerOperands, allOperands], "Memory Allocation Extension Set", "## Try Re-allocate Memory\n\n*Return error code upon failure*"),
 	"HEAP_FRE": new MnemonicInfo([registerOperands], "Memory Allocation Extension Set", "## Free Memory"),
+
+	// File System Extension Set
+	"FSYS_CWD": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Change Working Directory"),
+	"FSYS_GWD": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Get Working Directory"),
+	"FSYS_CDR": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Create Directory"),
+	"FSYS_DDR": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Delete Directory Recursively"),
+	"FSYS_DDE": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Delete Empty Directory"),
+	"FSYS_DEX": new MnemonicInfo([registerOperands, memLocationOperands], "File System Extension Set", "## Directory Exists?"),
+	"FSYS_CPY": new MnemonicInfo([memLocationOperands, memLocationOperands], "File System Extension Set", "## Copy File"),
+	"FSYS_MOV": new MnemonicInfo([memLocationOperands, memLocationOperands], "File System Extension Set", "## Move File"),
+	"FSYS_BDL": new MnemonicInfo([memLocationOperandsOptional], "File System Extension Set", "## Begin Directory Listing"),
+	"FSYS_GNF": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Get Next File in Directory Listing"),
+	"FSYS_GND": new MnemonicInfo([memLocationOperands], "File System Extension Set", "## Get Next Directory in Directory Listing"),
+	"FSYS_GCT": new MnemonicInfo([registerOperands, memLocationOperands], "File System Extension Set", "## Get Creation Time"),
+	"FSYS_GMT": new MnemonicInfo([registerOperands, memLocationOperands], "File System Extension Set", "## Get Modification Time"),
+	"FSYS_GAT": new MnemonicInfo([registerOperands, memLocationOperands], "File System Extension Set", "## Get Access Time"),
+	"FSYS_SCT": new MnemonicInfo([memLocationOperands, registerOrLiteralOperands], "File System Extension Set", "## Set Creation Time"),
+	"FSYS_SMT": new MnemonicInfo([memLocationOperands, registerOrLiteralOperands], "File System Extension Set", "## Set Modification Time"),
+	"FSYS_SAT": new MnemonicInfo([memLocationOperands, registerOrLiteralOperands], "File System Extension Set", "## Set Access Time"),
+
+	// Terminal Extension Set
+	"TERM_CLS": new MnemonicInfo([], "Terminal Extension Set", "## Clear Screen"),
+	"TERM_AEE": new MnemonicInfo([], "Terminal Extension Set", "## Auto Echo Enable"),
+	"TERM_AED": new MnemonicInfo([], "Terminal Extension Set", "## Auto Echo Disable"),
+	"TERM_SCY": new MnemonicInfo([allOperands], "Terminal Extension Set", "## Set Vertical Cursor Position"),
+	"TERM_SCX": new MnemonicInfo([allOperands], "Terminal Extension Set", "## Set Horizontal Cursor Position"),
+	"TERM_GCY": new MnemonicInfo([registerOperands], "Terminal Extension Set", "## Get Vertical Cursor Position"),
+	"TERM_GCX": new MnemonicInfo([registerOperands], "Terminal Extension Set", "## Get Horizontal Cursor Position"),
+	"TERM_GSY": new MnemonicInfo([registerOperands], "Terminal Extension Set", "## Get Terminal Buffer Height"),
+	"TERM_GSX": new MnemonicInfo([registerOperands], "Terminal Extension Set", "## Get Terminal Buffer Width"),
+	"TERM_BEP": new MnemonicInfo([], "Terminal Extension Set", "## Beep"),
+	"TERM_SFC": new MnemonicInfo([allOperands], "Terminal Extension Set", "## Set Foreground Color"),
+	"TERM_SBC": new MnemonicInfo([allOperands], "Terminal Extension Set", "## Set Background Color"),
+	"TERM_RSC": new MnemonicInfo([], "Terminal Extension Set", "## Reset Color"),
 
 	// Directives
 	"%PAD": new MnemonicInfo([literalOperands], "Assembler Directives", "## Pad With 0s"),
@@ -200,7 +243,7 @@ const registers: { [name: string]: string } = {
 	"rpo": "Program Offset",
 	"rso": "Stack Offset",
 	"rsb": "Stack Base",
-	"rsf": "Status Flags\n\n*(Zero Flag, Carry Flag, File End Flag, Sign Flag, Overflow Flag, 59 remaining high bits undefined)*",
+	"rsf": "Status Flags\n\n*(Zero Flag, Carry Flag, File End Flag, Sign Flag, Overflow Flag, Auto Echo Flag, 58 remaining high bits undefined)*",
 	"rrv": "Return Value",
 	"rfp": "Fast Pass Parameter",
 	"rg0": "General 0",
