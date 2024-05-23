@@ -425,21 +425,22 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		let commaIndex = line.indexOf(',', charPosition);
 		let spaceIndex = line.indexOf(' ', charPosition);
 		let bracketIndex = line.indexOf('[', charPosition);
-		let endIndex;
-		if (commaIndex !== -1 && spaceIndex !== -1 && bracketIndex === -1) {
-			endIndex = Math.min(commaIndex, spaceIndex);
+		let endIndices: number[] = [];
+		if (bracketIndex !== -1) {
+			endIndices.push(bracketIndex);
 		}
-		else if (bracketIndex !== -1 && bracketIndex >= charPosition) {
-			endIndex = bracketIndex;
+		if (commaIndex !== -1) {
+			endIndices.push(commaIndex);
 		}
-		else if (commaIndex !== -1) {
-			endIndex = commaIndex;
+		if (spaceIndex !== -1) {
+			endIndices.push(spaceIndex);
 		}
-		else if (spaceIndex !== -1) {
-			endIndex = spaceIndex;
+		let endIndex: number;
+		if (endIndices.length === 0) {
+			endIndex = line.length;
 		}
 		else {
-			endIndex = line.length;
+			endIndex = Math.min(...endIndices);
 		}
 		let beforeCursorOriginalCase = line.slice(0, endIndex)
 			.split('(').slice(-1)[0]
@@ -457,7 +458,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		let activeParameterOriginalCase = beforeCursorOriginalCase.split(' ').slice(-1)[0].split(',').slice(-1)[0];
 		let activeParameter = activeParameterOriginalCase.toUpperCase();
-		let registerOpFormat = activeParameter.replace(/^\*/, '').toLowerCase();
+		let registerOpFormat = activeParameter.replace(/^[*-]/, '').toLowerCase();
 		// Register
 		if (registers[registerOpFormat] !== undefined) {
 			let hoverString = generateRegisterDescription(registerOpFormat);
