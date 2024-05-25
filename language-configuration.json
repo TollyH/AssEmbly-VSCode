@@ -11,12 +11,14 @@
     "autoClosingPairs": [
         { "open": "\"", "close": "\"", "notIn": ["string"] },
         { "open": "'", "close": "'", "notIn": ["string"] },
-        { "open": "[", "close": "]", "notIn": ["string"] }
+        { "open": "[", "close": "]", "notIn": ["string"] },
+        { "open": "!>", "close": "\n\n<!", "notIn": ["string", "comment"] }
     ],
     // symbols that can be used to surround a selection
     "surroundingPairs": [
         ["\"", "\""],
         ["'", "'"],
-        ["[", "]"]
+        ["[", "]"],
+        ["!>", "<!"]
     ]
 }
