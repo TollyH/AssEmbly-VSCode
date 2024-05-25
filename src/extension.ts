@@ -344,7 +344,9 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					.split('(').slice(-1)[0]
 					.split(')')[0]
 					.split('[').slice(-1)[0]
-					.split(']')[0];
+					.split(']')[0]
+					.split('+').slice(-1)[0]
+					.split('*').slice(-1)[0];
 				// If not a label/address or numeral
 				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
 						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
@@ -442,11 +444,14 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		else {
 			endIndex = Math.min(...endIndices);
 		}
-		let beforeCursorOriginalCase = line.slice(0, endIndex)
+		let slicedLine = line.slice(0, endIndex);
+		let beforeCursorOriginalCase = slicedLine
 			.split('(').slice(-1)[0]
 			.split(')')[0]
 			.split('[').slice(-1)[0]
-			.split(']')[0];
+			.split(']')[0]
+			.split('+').slice(-1)[0]
+			.split('*').slice(-1)[0];
 		let beforeCursor = beforeCursorOriginalCase.toUpperCase();
 		// Don't provide hover for comments, strings, or empty lines
 		if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length === 0) {
@@ -471,7 +476,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			return new vscode.Hover(hoverString);
 		}
 		// Label reference/address
-		if (beforeCursor.includes(' ') && activeParameter[0] === ":") {
+		if (slicedLine.includes(' ') && activeParameter[0] === ":") {
 			if (activeParameter.length >= 2 && activeParameter[1] >= '0' && activeParameter[1] <= '9') {
 				let hoverString = new vscode.MarkdownString("## Address Literal");
 				if (endIndex < line.length && line[endIndex] === '[') {

@@ -76,7 +76,7 @@
 				},
 				{
 					"name": "entity.name.class.label.address.literal.assembly-tolly",
-					"match": "(?<!^)(?<=\\s|,|\\():&[A-Za-z_][A-Za-z0-9_]*(?=\\s|,|$|;|\\)|\\[)"
+					"match": "(?<!^)(?<=\\s|,|\\(|\\[|\\+):&[A-Za-z_][A-Za-z0-9_]*(?=\\s|,|$|;|\\)|\\[|\\])"
 				},
 				{
 					"name": "variable.name.label.reference.assembly-tolly",
