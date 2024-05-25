@@ -719,7 +719,7 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					let assembledLineSet = new Set();
 					let baseFilePath = document.uri.fsPath;
 					assembledLines
-						.filter((l: any) => l["File"] === baseFilePath)
+						.filter((l: any) => l["File"].toLowerCase() === baseFilePath.toLowerCase())
 						.forEach((l: any) => assembledLineSet.add(l["Line"] - 1));
 					for (let i = 0; i < document.lineCount; i++) {
 						if (!assembledLineSet.has(i)) {
