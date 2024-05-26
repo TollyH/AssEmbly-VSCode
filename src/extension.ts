@@ -348,7 +348,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					.split('+').slice(-1)[0]
 					.split('*').slice(-1)[0];
 				// If not a label/address or numeral
-				if (activeParameter[0] !== ':' && activeParameter[0] !== '-' && activeParameter[0] !== '.'
+				if (activeParameter[0] !== ':' && activeParameter[0] !== '.'
 						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
 					// Assembler constants
 					if (activeParameter.startsWith("@!")) {
@@ -380,6 +380,10 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					else {
 						// Ignore pointer symbol
 						if (activeParameter[0] === '*') {
+							activeParameter = activeParameter.slice(1);
+						}
+						// Ignore negative
+						if (activeParameter[0] === '-') {
 							activeParameter = activeParameter.slice(1);
 						}
 						for (let r in registers) {
