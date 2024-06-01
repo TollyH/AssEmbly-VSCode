@@ -256,7 +256,7 @@ const registers: { [name: string]: string } = {
 	"rg6": "General 6",
 	"rg7": "General 7",
 	"rg8": "General 8",
-	"rg9": "General 9"
+	"rg9": "General 9",
 };
 
 const assemblerConstants: string[] = [
@@ -267,14 +267,24 @@ const assemblerConstants: string[] = [
 	"V1_CALL_STACK",
 	"IMPORT_DEPTH",
 	"CURRENT_ADDRESS",
+	"FULL_BASE_OPCODES",
 	"OBSOLETE_DIRECTIVES",
-	"ESCAPE_SEQUENCES"
+	"ESCAPE_SEQUENCES",
+	"FILE_PATH_MACROS",
+	"EXTENSION_SET_SIGNED_AVAIL",
+	"EXTENSION_SET_FLOATING_POINT_AVAIL",
+	"EXTENSION_SET_EXTENDED_BASE_AVAIL",
+	"EXTENSION_SET_EXTERNAL_ASM_AVAIL",
+	"EXTENSION_SET_HEAP_ALLOCATE_AVAIL",
+	"EXTENSION_SET_FILE_SYSTEM_AVAIL",
+	"EXTENSION_SET_TERMINAL_AVAIL",
+	"DISPLACEMENT_AVAIL",
 ];
 
 const predefinedMacros: string[] = [
 	"FILE_PATH",
 	"FILE_NAME",
-	"FOLDER_PATH"
+	"FOLDER_PATH",
 ];
 
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
