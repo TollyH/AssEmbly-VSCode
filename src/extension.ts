@@ -160,6 +160,7 @@ const mnemonics: { [mnemonic: string]: MnemonicInfo } = {
 	"EXTD_CSS": new MnemonicInfo([registerOperands, registerOperandsOptional], "Extended Base Set", "## Query Call Stack Size"),
 	"EXTD_HLT": new MnemonicInfo([allOperands], "Extended Base Set", "## Halt With Exit Code"),
 	"EXTD_MPA": new MnemonicInfo([writableOperands, pointerOperands], "Extended Base Set", "## Move Pointer Address"),
+	"EXTD_SLP": new MnemonicInfo([allOperands], "Extended Base Set", "## Sleep"),
 
 	// External assembly extension set
 	"ASMX_LDA": new MnemonicInfo([memLocationOperands], "External Assembly Extension Set", "## Load External Assembly"),
