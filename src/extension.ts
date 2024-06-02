@@ -287,6 +287,23 @@ const predefinedMacros: string[] = [
 	"FOLDER_PATH",
 ];
 
+const escapeSequences: {[character: string]: string} = {
+	'"': "Double quote",
+	'\'': "Single quote",
+	'\\': "Backslash",
+	'@': "At sign",
+	'0': "Null",
+	'a': "Alert",
+	'b': "Backspace",
+	'f': "Form feed",
+	'n': "Newline",
+	'r': "Carriage return",
+	't': "Horizontal tab",
+	'v': "Vertical tab",
+	'u': "Unicode codepoint (16-bit)",
+	'U': "Unicode codepoint (32-bit)"
+};
+
 const tokensLegend = new vscode.SemanticTokensLegend(["variable"], ["declaration"]);
 
 // Populated by AssEmbly linter
@@ -339,13 +356,30 @@ function generateLabelDescription(labelName: string, definition: boolean): vscod
 	return docString;
 }
 
+function generateEscapeDescription(escape: string): vscode.MarkdownString {
+	let docString = new vscode.MarkdownString();
+	docString.appendMarkdown("## Escape Sequence:\n### ");
+	docString.appendMarkdown(escapeSequences[escape.toString()]);
+	return docString;
+}
+
 class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
 		let completionItems: vscode.CompletionItem[] = [];
 		let line = document.lineAt(position.line).text;
 		let beforeCursor = line.slice(0, position.character).toUpperCase().trim();
+		// Inside a string
+		if (beforeCursor.includes('"') || beforeCursor.includes('\'')) {
+			if (beforeCursor.slice(-1)[0] === '\\') {
+				for (const c in escapeSequences) {
+					completionItems.push(new vscode.CompletionItem(
+						c, vscode.CompletionItemKind.Value
+					));
+				}
+			}
+		}
 		// Don't autocorrect label definitions or comments
-		if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
+		else if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
 			// If this is the first word in the line
 			if (!beforeCursor.includes(' ') && !beforeCursor.includes('(')) {
 				if (beforeCursor[0] === '!') {
@@ -479,6 +513,10 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 		else if (item.kind === vscode.CompletionItemKind.Reference) {
 			item.documentation = generateLabelDescription(item.label.toString(), false);
 		}
+		// Escape sequence
+		else if (item.kind === vscode.CompletionItemKind.Value) {
+			item.documentation = generateEscapeDescription(item.label.toString());
+		}
 		return item;
 	}
 }
@@ -494,6 +532,26 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		let indentOffset = rawLine.length - line.length;
 		let charPosition = position.character - indentOffset;
 		line = line.trimEnd();
+		let escapeSlice = line.slice(0, charPosition);
+		// Escape sequences
+		if (escapeSlice.includes('"') || escapeSlice.includes('\'')) {
+			if (line.length >= 2) {
+				if (line[charPosition] === '\\') {
+					let c = line[charPosition + 1];
+					if (escapeSequences.hasOwnProperty(c)) {
+						return new vscode.Hover(generateEscapeDescription(c));
+					}
+				}
+				if (line[charPosition - 1] === '\\') {
+					let c = line[charPosition];
+					if (escapeSequences.hasOwnProperty(c)) {
+						return new vscode.Hover(generateEscapeDescription(c));
+					}
+				}
+			}
+			// If not an escape sequence, ignore everything else as we're in a string/character literal
+			return null;
+		}
 		// If cursor is in the middle of a parameter consider the whole parameter
 		let commaIndex = line.indexOf(',', charPosition);
 		let spaceIndex = line.indexOf(' ', charPosition);
@@ -525,7 +583,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			.split('*').slice(-1)[0];
 		let beforeCursor = beforeCursorOriginalCase.toUpperCase();
 		// Don't provide hover for comments, strings, or empty lines
-		if (beforeCursor.includes(';') || beforeCursor.includes('"') || beforeCursor.trimStart().length === 0) {
+		if (beforeCursor.includes(';') || beforeCursor.trimStart().length === 0) {
 			return null;
 		}
 		// Mnemonic

@@ -33,7 +33,7 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Address                            | ✔️                  | ✔️                | -             |
 |   Character                          | ✔️                  | ✔️                | -             |
 |   String                             | ✔️                  | ❌                | -             |
-|   Escape sequences                   | ✔️                  | ❌                | ❌            |
+|   Escape sequences                   | ✔️                  | ✔️                | ✔️            |
 |   Import paths                       | -                   | ❌                | ❌            |
 | **Assembler Variables**              |                     |                   |               |
 |   Variables                          | ✔️                  | ✔️                | ✔️            |
