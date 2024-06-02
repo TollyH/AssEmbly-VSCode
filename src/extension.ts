@@ -330,6 +330,15 @@ function generateRegisterDescription(registerName: string): vscode.MarkdownStrin
 	return docString;
 }
 
+function generateLabelDescription(labelName: string, definition: boolean): vscode.MarkdownString {
+	let docString = new vscode.MarkdownString();
+	docString.appendMarkdown(definition ? "## Label Definition" : "## Label Reference");
+	if (labels.hasOwnProperty(labelName)) {
+		docString.appendMarkdown(`\nLabel points to address \`0x${labels[labelName].toString(16).toUpperCase()}\``);
+	}
+	return docString;
+}
+
 class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
 		let completionItems: vscode.CompletionItem[] = [];
@@ -468,8 +477,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 		}
 		// Labels
 		else if (item.kind === vscode.CompletionItemKind.Reference) {
-			item.documentation = new vscode.MarkdownString(
-				`Label points to address \`0x${labels[item.label.toString()].toString(16).toUpperCase()}\``);
+			item.documentation = generateLabelDescription(item.label.toString(), false);
 		}
 		return item;
 	}
@@ -547,9 +555,13 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 				}
 				return new vscode.Hover(hoverString);
 			}
-			let hoverString = new vscode.MarkdownString("## Label Reference");
+			let hoverString;
 			if (activeParameter.length > 1 && activeParameter[1] === '&') {
+				hoverString = generateLabelDescription(activeParameter.slice(2), false);
 				hoverString.appendMarkdown("\n\n*`&`: Address corresponding to label will be treated as a literal numeric value*");
+			}
+			else {
+				hoverString = generateLabelDescription(activeParameter.slice(1), false);
 			}
 			if (endIndex < line.length && line[endIndex] === '[') {
 				hoverString.appendMarkdown("\n\n*`[...]`: Contents of the square brackets will be added to the label value at assemble-time to get the final address*");
@@ -558,7 +570,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		// Label definition
 		if (activeParameter[0] === ":") {
-			return new vscode.Hover("## Label Definition");
+			return new vscode.Hover(generateLabelDescription(activeParameter.slice(1), true));
 		}
 		// Character literal
 		if (activeParameter.length >= 3 && activeParameter[0] === '\''
@@ -741,23 +753,14 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					result = JSON.parse(stdout);
 					warnings = result["Warnings"];
 					assembledLines = result["AssembledLines"];
-					if (result["Labels"]) {
+					if (result["Labels"] !== undefined && result["Labels"] !== null) {
 						labels = result["Labels"];
 					}
-					else {
-						labels = {};
-					}
-					if (result["AllVariables"]) {
+					if (Array.isArray(result["AllVariables"])) {
 						definedVariables = result["AllVariables"];
 					}
-					else {
-						definedVariables = [];
-					}
-					if (result["AllMacros"]) {
+					if (Array.isArray(result["AllMacros"])) {
 						definedMacros = result["AllMacros"];
-					}
-					else {
-						definedMacros = [];
 					}
 				}
 				catch {
