@@ -290,7 +290,7 @@ const predefinedMacros: string[] = [
 const tokensLegend = new vscode.SemanticTokensLegend(["variable"], ["declaration"]);
 
 // Populated by AssEmbly linter
-let labels: {[name: string]: number} = {};
+let labels: { [name: string]: number } = {};
 let definedVariables: string[] = [];
 let definedMacros: string[] = [];
 
@@ -367,7 +367,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					.split('*').slice(-1)[0];
 				// If not a label/address or numeral
 				if (activeParameter[0] !== ':' && activeParameter[0] !== '.'
-						&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
+					&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
 					// Assembler constants
 					if (activeParameter.startsWith("@!")) {
 						// Remove "@!" prefix
@@ -521,10 +521,10 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		// Character literal
 		if (activeParameter.length >= 3 && activeParameter[0] === '\''
-				&& activeParameter[activeParameter.length - 1] === '\'') {
+			&& activeParameter[activeParameter.length - 1] === '\'') {
 			let characterLiteral = activeParameterOriginalCase.slice(1, -1);
-			let numericalUtf8 : BigInt;
-			let utf8Bytes : Uint8Array;
+			let numericalUtf8: BigInt;
+			let utf8Bytes: Uint8Array;
 			if (characterLiteral[0] === '\\' && characterLiteral.length >= 2) {
 				let escape = characterLiteral[1];
 				switch (escape) {
@@ -592,7 +592,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		// Numeric literal
 		if ((activeParameter[0] >= '0' && activeParameter[0] <= '9')
-				|| activeParameter[0] === '.' || activeParameter[0] === '-') {
+			|| activeParameter[0] === '.' || activeParameter[0] === '-') {
 			let hoverString = new vscode.MarkdownString("## Numeric Literal");
 			if (activeParameter.startsWith("0X")) {
 				hoverString.appendMarkdown("\n\n*`0x`: Hexadecimal number*");
@@ -747,12 +747,12 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 							? vscode.DiagnosticSeverity.Warning
 							: vscode.DiagnosticSeverity.Information;
 					let messageStart = severity === 0
-					? "Fatal Error"
-					: severity === 1
-						? `Error ${String(warning["Code"]).padStart(4, '0')}`
-						: severity === 2
-							? `Warning ${String(warning["Code"]).padStart(4, '0')}`
-							: `Suggestion ${String(warning["Code"]).padStart(4, '0')}`;
+						? "Fatal Error"
+						: severity === 1
+							? `Error ${String(warning["Code"]).padStart(4, '0')}`
+							: severity === 2
+								? `Warning ${String(warning["Code"]).padStart(4, '0')}`
+								: `Suggestion ${String(warning["Code"]).padStart(4, '0')}`;
 					if (warning["MacroName"] !== "") {
 						messageStart += ` (in macro "${warning["MacroName"]}")`;
 					}
