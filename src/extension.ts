@@ -374,7 +374,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						activeParameter = activeParameter.slice(2);
 						for (let i = 0; i < assemblerConstants.length; i++) {
 							let c = assemblerConstants[i];
-							if (c.startsWith(activeParameter)) {
+							if (c.toUpperCase().startsWith(activeParameter)) {
 								completionItems.push(new vscode.CompletionItem(
 									c, vscode.CompletionItemKind.Constant
 								));
@@ -387,7 +387,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						activeParameter = activeParameter.slice(1);
 						for (let i = 0; i < predefinedMacros.length; i++) {
 							let c = predefinedMacros[i];
-							if (c.startsWith(activeParameter)) {
+							if (c.toUpperCase().startsWith(activeParameter)) {
 								completionItems.push(new vscode.CompletionItem(
 									c, vscode.CompletionItemKind.Constant
 								));
@@ -402,9 +402,9 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						}
 						activeParameter = activeParameter.slice(1);
 						for (const c in labels) {
-							if (c.startsWith(activeParameter)) {
+							if (c.toUpperCase().startsWith(activeParameter)) {
 								completionItems.push(new vscode.CompletionItem(
-									c, vscode.CompletionItemKind.Variable
+									c, vscode.CompletionItemKind.Reference
 								));
 							}
 						}
@@ -444,6 +444,11 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 		// Registers
 		else if (item.kind === vscode.CompletionItemKind.Property) {
 			item.documentation = generateRegisterDescription(item.label.toString());
+		}
+		// Labels
+		else if (item.kind === vscode.CompletionItemKind.Reference) {
+			item.documentation = new vscode.MarkdownString(
+				`Label points to address \`0x${labels[item.label.toString()].toString(16).toUpperCase()}\``);
 		}
 		return item;
 	}
