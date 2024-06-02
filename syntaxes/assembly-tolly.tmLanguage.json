@@ -18,6 +18,9 @@
 			"include": "#registers"
 		},
 		{
+			"include": "#parameters"
+		},
+		{
 			"include": "#strings"
 		},
 		{
@@ -109,6 +112,14 @@
 				{
 					"name": "entity.name.function.register.assembly-tolly",
 					"match": "(?i)(?<!^)(?<=\\s|,|\\(|\\[-?)(?:rpo|rso|rsb|rsf|rrv|rfp|rg0|rg1|rg2|rg3|rg4|rg5|rg6|rg7|rg8|rg9)(?=\\s|,|$|;|\\)|\\])"
+				}
+			]
+		},
+		"parameters": {
+			"patterns": [
+				{
+					"name": "variable.name.macro.parameter.assembly-tolly",
+					"match": "(?i)\\$[0-9]+!?"
 				}
 			]
 		},
