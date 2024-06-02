@@ -25,8 +25,8 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Displacement                       | ✔️                  | ✔️                | ✔️            |
 | **Labels**                           |                     |                   |               |
 |   Definitions                        | ✔️                  | ✔️                | -             |
-|   References                         | ✔️                  | ✔️                | ❌            |
-|   Literal references                 | ✔️                  | ✔️                | ❌            |
+|   References                         | ✔️                  | ✔️                | ✔️            |
+|   Literal references                 | ✔️                  | ✔️                | ✔️            |
 |   Displacement                       | ✔️                  | ✔️                | ✔️            |
 | **Literals**                         |                     |                   |               |
 |   Numeric                            | ✔️                  | ✔️                | -             |

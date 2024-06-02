@@ -365,8 +365,8 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					.split(']')[0]
 					.split('+').slice(-1)[0]
 					.split('*').slice(-1)[0];
-				// If not a label/address or numeral
-				if (activeParameter[0] !== ':' && activeParameter[0] !== '.'
+				// If not a numeral
+				if (activeParameter[0] !== '.'
 					&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
 					// Assembler constants
 					if (activeParameter.startsWith("@!")) {
@@ -374,7 +374,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						activeParameter = activeParameter.slice(2);
 						for (let i = 0; i < assemblerConstants.length; i++) {
 							let c = assemblerConstants[i];
-							if (c.toUpperCase().startsWith(activeParameter)) {
+							if (c.startsWith(activeParameter)) {
 								completionItems.push(new vscode.CompletionItem(
 									c, vscode.CompletionItemKind.Constant
 								));
@@ -382,14 +382,29 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						}
 					}
 					// Predefined macros
-					else if (activeParameter.startsWith('#')) {
+					else if (activeParameter[0] === '#') {
 						// Remove "#" prefix
 						activeParameter = activeParameter.slice(1);
 						for (let i = 0; i < predefinedMacros.length; i++) {
 							let c = predefinedMacros[i];
-							if (c.toUpperCase().startsWith(activeParameter)) {
+							if (c.startsWith(activeParameter)) {
 								completionItems.push(new vscode.CompletionItem(
 									c, vscode.CompletionItemKind.Constant
+								));
+							}
+						}
+					}
+					// Labels
+					else if (activeParameter[0] === ":") {
+						// Remove ":" or ":&" prefix
+						if (activeParameter.startsWith(":&")) {
+							activeParameter = activeParameter.slice(1);
+						}
+						activeParameter = activeParameter.slice(1);
+						for (const c in labels) {
+							if (c.startsWith(activeParameter)) {
+								completionItems.push(new vscode.CompletionItem(
+									c, vscode.CompletionItemKind.Variable
 								));
 							}
 						}
@@ -408,7 +423,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 							if (r.toUpperCase().startsWith(activeParameter)) {
 								completionItems.push(
 									new vscode.CompletionItem(
-										r, vscode.CompletionItemKind.Variable
+										r, vscode.CompletionItemKind.Property
 									)
 								);
 							}
@@ -427,7 +442,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 			item.documentation = generateMnemonicDescription(item.label.toString());
 		}
 		// Registers
-		else if (item.kind === vscode.CompletionItemKind.Variable) {
+		else if (item.kind === vscode.CompletionItemKind.Property) {
 			item.documentation = generateRegisterDescription(item.label.toString());
 		}
 		return item;
