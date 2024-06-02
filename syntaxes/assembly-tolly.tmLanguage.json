@@ -21,6 +21,9 @@
 			"include": "#parameters"
 		},
 		{
+			"include": "#special"
+		},
+		{
 			"include": "#strings"
 		},
 		{
@@ -120,6 +123,26 @@
 				{
 					"name": "variable.name.macro.parameter.assembly-tolly",
 					"match": "(?i)\\$[0-9]+!?"
+				}
+			]
+		},
+		"special": {
+			"patterns": [
+				{
+					"name": "entity.name.function.special.condition.parameter.assembly-tolly",
+					"match": "(?i)(?<=\\s)(?:DEF|NDEF|EQ|NEQ|GT|GTE|LT|LTE)(?=\\s|,|$|;)"
+				},
+				{
+					"name": "entity.name.function.special.operation.parameter.assembly-tolly",
+					"match": "(?i)(?<=\\s)(?:ADD|SUB|MUL|DIV|REM|BIT_AND|BIT_OR|BIT_XOR|BIT_NOT|AND|OR|XOR|NOT|SHL|SHR|CMP_EQ|CMP_NEQ|CMP_GT|CMP_GTE|CMP_LT|CMP_LTE)(?=\\s|,|$|;)"
+				},
+				{
+					"name": "entity.name.function.special.severity.parameter.assembly-tolly",
+					"match": "(?i)(?<=\\s)(?:error|warning|suggestion)(?=\\s|,|$|;)"
+				},
+				{
+					"name": "constant.numeric.special.analyzerstate.parameter.assembly-tolly",
+					"match": "(?i)(?<=\\s|,)(?:0|1|r)(?=\\s|,|$|;)"
 				}
 			]
 		},
