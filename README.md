@@ -2,7 +2,7 @@
 
 A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly) providing the following features:
 
-- Autocompletion of mnemonic, register, and assembler constant names
+- Autocompletion of mnemonic, register, label, variable, and macro names
 - Code linting - underlining errors, warnings, and suggestions returned as a result of assembling a program
 - Syntax highlighting
 - Mouse-over hover tooltips that describe what is being hovered over
@@ -40,8 +40,8 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Constants                          | ✔️                  | ✔️                | ✔️            |
 |   `%VAROP`/`%IF`/`%WHILE` operations | ❌                  | ❌                | ❌            |
 | **Macros**                           |                     |                   |               |
-|   Single-line macro use              | ❌                  | ❌                | ❌            |
-|   Multi-line macro use               | ❌                  | ❌                | ❌            |
+|   Single-line macro use              | ✔️                  | ❌                | ❌            |
+|   Multi-line macro use               | ✔️                  | ❌                | ❌            |
 |   Parameter references               | ❌                  | ❌                | -             |
 |   Predefined macro use               | ✔️                  | ✔️                | ✔️            |
 | **Other**                            |                     |                   |               |

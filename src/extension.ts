@@ -287,6 +287,13 @@ const predefinedMacros: string[] = [
 	"FOLDER_PATH",
 ];
 
+const tokensLegend = new vscode.SemanticTokensLegend(["variable"], ["declaration"]);
+
+// Populated by AssEmbly linter
+let labels: {[name: string]: number} = {};
+let definedVariables: string[] = [];
+let definedMacros: string[] = [];
+
 function generateMnemonicDescription(mnemonicName: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
 	docString.appendMarkdown(mnemonics[mnemonicName].description);
@@ -623,6 +630,28 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 	}
 }
 
+class AssEmblyDocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
+	public provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SemanticTokens> {
+		const tokensBuilder = new vscode.SemanticTokensBuilder(tokensLegend);
+
+		// Find macro usages and highlight them
+		for (let i = 0; i < document.lineCount; i++) {
+			let line = document.lineAt(i);
+			let isDefinition = /^\s*%MACRO/i.test(line.text);
+			for (let j = 0; j < definedMacros.length; j++) {
+				let macro = definedMacros[j];
+				for (let startIndex = line.text.indexOf(macro); startIndex >= 0; startIndex = line.text.indexOf(macro, startIndex + 1)) {
+					tokensBuilder.push(
+						new vscode.Range(line.lineNumber, startIndex, line.lineNumber, startIndex + macro.length),
+						"variable", isDefinition ? ["declaration"] : []);
+				}
+			}
+		}
+
+		return tokensBuilder.build();
+	}
+}
+
 function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 	collection.clear();
 	let document = vscode.window.activeTextEditor?.document;
@@ -671,6 +700,15 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					result = JSON.parse(stdout);
 					warnings = result["Warnings"];
 					assembledLines = result["AssembledLines"];
+					if (result["Labels"]) {
+						labels = result["Labels"];
+					}
+					if (result["AllVariables"]) {
+						definedVariables = result["AllVariables"];
+					}
+					if (result["AllMacros"]) {
+						definedMacros = result["AllMacros"];
+					}
 				}
 				catch {
 					warnings = null;
@@ -768,6 +806,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerHoverProvider(
 			{ scheme: 'file', language: 'assembly-tolly' },
 			new AssEmblyHoverProvider()
+		)
+	);
+
+	context.subscriptions.push(
+		vscode.languages.registerDocumentSemanticTokensProvider(
+			{ scheme: 'file', language: 'assembly-tolly' },
+			new AssEmblyDocumentSemanticTokensProvider(),
+			tokensLegend
 		)
 	);
 
