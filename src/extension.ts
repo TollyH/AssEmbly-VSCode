@@ -434,12 +434,20 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 						}
 						for (let r in registers) {
 							if (r.toUpperCase().startsWith(activeParameter)) {
-								completionItems.push(
-									new vscode.CompletionItem(
-										r, vscode.CompletionItemKind.Property
-									)
-								);
+								completionItems.push(new vscode.CompletionItem(
+									r, vscode.CompletionItemKind.Property
+								));
 							}
+						}
+					}
+
+					// Macros
+					for (let i = 0; i < definedMacros.length; i++) {
+						let c = definedMacros[i];
+						if (c.toUpperCase().startsWith(activeParameter)) {
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.TypeParameter
+							));
 						}
 					}
 				}
@@ -736,11 +744,20 @@ function updateDiagnostics(collection: vscode.DiagnosticCollection) {
 					if (result["Labels"]) {
 						labels = result["Labels"];
 					}
+					else {
+						labels = {};
+					}
 					if (result["AllVariables"]) {
 						definedVariables = result["AllVariables"];
 					}
+					else {
+						definedVariables = [];
+					}
 					if (result["AllMacros"]) {
 						definedMacros = result["AllMacros"];
+					}
+					else {
+						definedMacros = [];
 					}
 				}
 				catch {

@@ -40,8 +40,8 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Constants                          | ✔️                  | ✔️                | ✔️            |
 |   `%VAROP`/`%IF`/`%WHILE` operations | ❌                  | ❌                | ❌            |
 | **Macros**                           |                     |                   |               |
-|   Single-line macro use              | ✔️                  | ❌                | ❌            |
-|   Multi-line macro use               | ✔️                  | ❌                | ❌            |
+|   Single-line macro use              | ✔️                  | ❌                | ✔️            |
+|   Multi-line macro use               | ✔️                  | ❌                | ✔️            |
 |   Parameter references               | ✔️                  | ❌                | -             |
 |   Predefined macro use               | ✔️                  | ✔️                | ✔️            |
 | **Other**                            |                     |                   |               |
