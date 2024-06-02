@@ -36,7 +36,7 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Escape sequences                   | ✔️                  | ❌                | ❌            |
 |   Import paths                       | -                   | ❌                | ❌            |
 | **Assembler Variables**              |                     |                   |               |
-|   Variables                          | ✔️                  | ✔️                | ❌            |
+|   Variables                          | ✔️                  | ✔️                | ✔️            |
 |   Constants                          | ✔️                  | ✔️                | ✔️            |
 |   `%VAROP`/`%IF`/`%WHILE` operations | ❌                  | ❌                | ❌            |
 | **Macros**                           |                     |                   |               |

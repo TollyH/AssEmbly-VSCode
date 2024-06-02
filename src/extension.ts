@@ -381,6 +381,19 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 							}
 						}
 					}
+					// Assembler variables
+					else if (activeParameter[0] === "@") {
+						// Remove "@" prefix
+						activeParameter = activeParameter.slice(1);
+						for (let i = 0; i < definedVariables.length; i++) {
+							let c = definedVariables[i];
+							if (c.toUpperCase().startsWith(activeParameter)) {
+								completionItems.push(new vscode.CompletionItem(
+									c, vscode.CompletionItemKind.Variable
+								));
+							}
+						}
+					}
 					// Predefined macros
 					else if (activeParameter[0] === '#') {
 						// Remove "#" prefix
