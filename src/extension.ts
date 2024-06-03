@@ -422,15 +422,13 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					beforeCursor = beforeCursor.substring(1).trimStart();
 				}
 				for (let m in mnemonics) {
-					if (m.indexOf(beforeCursor) !== -1) {
-						let item = new vscode.CompletionItem(
-							m, m[0] === '%'
-							? vscode.CompletionItemKind.Keyword
-							: vscode.CompletionItemKind.Function,
-						);
-						item.range = new vscode.Range(position.line, line.toUpperCase().indexOf(beforeCursor), position.line, position.character);
-						completionItems.push(item);
-					}
+					let item = new vscode.CompletionItem(
+						m, m[0] === '%'
+						? vscode.CompletionItemKind.Keyword
+						: vscode.CompletionItemKind.Function,
+					);
+					item.range = new vscode.Range(position.line, line.toUpperCase().indexOf(beforeCursor), position.line, position.character);
+					completionItems.push(item);
 				}
 			}
 			else {
@@ -448,85 +446,54 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					&& (activeParameter[0] < '0' || activeParameter[0] > '9')) {
 					// Assembler constants
 					if (activeParameter.startsWith("@!")) {
-						// Remove "@!" prefix
-						activeParameter = activeParameter.slice(2);
 						for (let i = 0; i < assemblerConstants.length; i++) {
 							let c = assemblerConstants[i];
-							if (c.toUpperCase().startsWith(activeParameter)) {
-								completionItems.push(new vscode.CompletionItem(
-									c, vscode.CompletionItemKind.Constant
-								));
-							}
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Constant
+							));
 						}
 					}
 					// Assembler variables
 					else if (activeParameter[0] === "@") {
-						// Remove "@" prefix
-						activeParameter = activeParameter.slice(1);
 						for (let i = 0; i < definedVariables.length; i++) {
 							let c = definedVariables[i];
-							if (c.toUpperCase().startsWith(activeParameter)) {
-								completionItems.push(new vscode.CompletionItem(
-									c, vscode.CompletionItemKind.Variable
-								));
-							}
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Variable
+							));
 						}
 					}
 					// Predefined macros
 					else if (activeParameter[0] === '#') {
-						// Remove "#" prefix
-						activeParameter = activeParameter.slice(1);
 						for (let i = 0; i < predefinedMacros.length; i++) {
 							let c = predefinedMacros[i];
-							if (c.toUpperCase().startsWith(activeParameter)) {
-								completionItems.push(new vscode.CompletionItem(
-									c, vscode.CompletionItemKind.Constant
-								));
-							}
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Constant
+							));
 						}
 					}
 					// Labels
 					else if (activeParameter[0] === ":") {
-						// Remove ":" or ":&" prefix
-						if (activeParameter.startsWith(":&")) {
-							activeParameter = activeParameter.slice(1);
-						}
-						activeParameter = activeParameter.slice(1);
 						for (const c in labels) {
-							if (c.toUpperCase().startsWith(activeParameter)) {
-								completionItems.push(new vscode.CompletionItem(
-									c, vscode.CompletionItemKind.Reference
-								));
-							}
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Reference
+							));
 						}
 					}
 					// Registers
 					else {
-						// Ignore pointer symbol
-						if (activeParameter[0] === '*') {
-							activeParameter = activeParameter.slice(1);
-						}
-						// Ignore negative
-						if (activeParameter[0] === '-') {
-							activeParameter = activeParameter.slice(1);
-						}
 						for (let r in registers) {
-							if (r.toUpperCase().startsWith(activeParameter)) {
-								completionItems.push(new vscode.CompletionItem(
-									r, vscode.CompletionItemKind.Property
-								));
-							}
+							completionItems.push(new vscode.CompletionItem(
+								r, vscode.CompletionItemKind.Property
+							));
 						}
 					}
 
 					// Macros
 					for (let i = 0; i < definedMacros.length; i++) {
 						let c = definedMacros[i];
-						if (c.toUpperCase().startsWith(activeParameter)) {
-							completionItems.push(new vscode.CompletionItem(
-								c, vscode.CompletionItemKind.TypeParameter
-							));
-						}
+						completionItems.push(new vscode.CompletionItem(
+							c, vscode.CompletionItemKind.TypeParameter
+						));
 					}
 				}
 			}
