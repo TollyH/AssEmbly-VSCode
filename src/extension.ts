@@ -1,5 +1,8 @@
-import * as vscode from 'vscode';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 import * as child_process from 'child_process';
+import * as vscode from 'vscode';
 
 enum OperandType {
 	Register,
@@ -287,7 +290,7 @@ const predefinedMacros: string[] = [
 	"FOLDER_PATH",
 ];
 
-const escapeSequences: {[character: string]: string} = {
+const escapeSequences: { [character: string]: string } = {
 	'"': "Double quote",
 	'\'': "Single quote",
 	'\\': "Backslash",
@@ -367,7 +370,7 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
 		let completionItems: vscode.CompletionItem[] = [];
 		let line = document.lineAt(position.line).text;
-		let beforeCursor = line.slice(0, position.character).toUpperCase().trim();
+		let beforeCursor = line.slice(0, position.character).trim();
 		// Inside a string
 		if (beforeCursor.includes('"') || beforeCursor.includes('\'')) {
 			if (beforeCursor.slice(-1)[0] === '\\') {
@@ -377,9 +380,41 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 					));
 				}
 			}
+			try {
+				let documentDir = path.dirname(document.uri.fsPath);
+				let typedPath = beforeCursor.slice(beforeCursor.indexOf('"') + 1)
+					.replace('\\\\', '/').replace('\\', '');
+				if (!path.isAbsolute(typedPath)) {
+					typedPath = path.join(documentDir, typedPath);
+				}
+				let parsedPath = path.parse(typedPath);
+				let listPath;
+				if (fs.existsSync(typedPath) && fs.statSync(typedPath).isDirectory()) {
+					listPath = typedPath;
+				}
+				else if (fs.existsSync(parsedPath.dir) && fs.statSync(parsedPath.dir).isDirectory()) {
+					listPath = parsedPath.dir;
+				}
+				if (listPath !== undefined) {
+					let items = fs.readdirSync(listPath);
+					for (let i = 0; i < items.length; i++) {
+						try {
+							let c = items[i].replace('\\', '\\\\');
+							completionItems.push(new vscode.CompletionItem(
+								c, fs.statSync(path.join(listPath, c)).isFile()
+								? vscode.CompletionItemKind.File
+								: vscode.CompletionItemKind.Folder
+							));
+						}
+						catch { }
+					}
+				}
+			}
+			catch { }
 		}
 		// Don't autocorrect label definitions or comments
 		else if (beforeCursor[0] !== ':' && !beforeCursor.includes(';')) {
+			beforeCursor = beforeCursor.toUpperCase();
 			// If this is the first word in the line
 			if (!beforeCursor.includes(' ') && !beforeCursor.includes('(')) {
 				if (beforeCursor[0] === '!') {

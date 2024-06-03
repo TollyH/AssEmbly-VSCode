@@ -34,7 +34,7 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Character                          | ✔️                  | ✔️                | -             |
 |   String                             | ✔️                  | ❌                | -             |
 |   Escape sequences                   | ✔️                  | ✔️                | ✔️            |
-|   Import paths                       | -                   | ❌                | ❌            |
+|   Import paths                       | -                   | -                 | ✔️            |
 | **Assembler Variables**              |                     |                   |               |
 |   Variables                          | ✔️                  | ✔️                | ✔️            |
 |   Constants                          | ✔️                  | ✔️                | ✔️            |
