@@ -32,7 +32,7 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Numeric                            | ✔️                  | ✔️                | -             |
 |   Address                            | ✔️                  | ✔️                | -             |
 |   Character                          | ✔️                  | ✔️                | -             |
-|   String                             | ✔️                  | ❌                | -             |
+|   String                             | ✔️                  | ✔️                | -             |
 |   Escape sequences                   | ✔️                  | ✔️                | ✔️            |
 |   Import paths                       | -                   | -                 | ✔️            |
 | **Assembler Variables**              |                     |                   |               |

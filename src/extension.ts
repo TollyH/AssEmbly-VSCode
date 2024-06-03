@@ -552,7 +552,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 				}
 			}
 			// If not an escape sequence, ignore everything else as we're in a string/character literal
-			return null;
+			return new vscode.Hover(new vscode.MarkdownString("## String"));
 		}
 		// If cursor is in the middle of a parameter consider the whole parameter
 		let commaIndex = line.indexOf(',', charPosition);
