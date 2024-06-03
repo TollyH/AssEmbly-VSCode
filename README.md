@@ -38,7 +38,7 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 | **Assembler Variables**              |                     |                   |               |
 |   Variables                          | ✔️                  | ✔️                | ✔️            |
 |   Constants                          | ✔️                  | ✔️                | ✔️            |
-|   `%VAROP`/`%IF`/`%WHILE` operations | ✔️                  | ❌                | ❌            |
+|   `%VAROP`/`%IF`/`%WHILE` operations | ✔️                  | ✔️                | ✔️            |
 | **Macros**                           |                     |                   |               |
 |   Single-line macro use              | ✔️                  | ✔️                | ✔️            |
 |   Multi-line macro use               | ✔️                  | ✔️                | ✔️            |
@@ -46,7 +46,7 @@ A Visual Studio code extension for [AssEmbly](https://github.com/TollyH/AssEmbly
 |   Predefined macro use               | ✔️                  | ✔️                | ✔️            |
 | **Other**                            |                     |                   |               |
 |   Comments                           | ✔️                  | ✔️                | -             |
-|   `%ANALYZER` operands               | ✔️                  | ❌                | ❌            |
+|   `%ANALYZER` operands               | ✔️                  | ✔️                | ✔️            |
 
 ---
 

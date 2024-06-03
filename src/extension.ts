@@ -307,6 +307,45 @@ const escapeSequences: { [character: string]: string } = {
 	'U': "Unicode codepoint (32-bit)"
 };
 
+const analyzerOperands: string[] = [
+	"ERROR", "WARNING", "SUGGESTION"
+];
+
+const varopOperands: { [operand: string]: string } = {
+	"ADD": "Add",
+	"SUB": "Subtract",
+	"MUL": "Multiply",
+	"DIV": "Divide",
+	"REM": "Remainder",
+	"BIT_AND": "Bitwise AND",
+	"BIT_OR": "Bitwise OR",
+	"BIT_XOR": "Bitwise Exclusive OR",
+	"BIT_NOT": "Bitwise NOT",
+	"AND": "Logical AND",
+	"OR": "Logical OR",
+	"XOR": "Logical Exclusive OR",
+	"NOT": "Logical NOT",
+	"SHL": "Shift Left",
+	"SHR": "Shift Right",
+	"CMP_EQ": "Compare Equal",
+	"CMP_NEQ": "Compare Not Equal",
+	"CMP_GT": "Compare Greater Than",
+	"CMP_GTE": "Compare Greater Than or Equal",
+	"CMP_LT": "Compare Less Than",
+	"CMP_LTE": "Compare Less Than or Equal",
+};
+
+const conditionalOperands: { [operand: string]: string } = {
+	"DEF": "Defined",
+	"NDEF": "Not Defined",
+	"EQ": "Equal",
+	"NEQ": "Not Equal",
+	"GT": "Greater Than",
+	"GTE": "Greater Than or Equal",
+	"LT": "Less Than",
+	"LTE": "Less Than or Equal",
+};
+
 const tokensLegend = new vscode.SemanticTokensLegend(["variable"], ["declaration"]);
 
 const parameterSeparators: string[] = [
@@ -367,6 +406,20 @@ function generateEscapeDescription(escape: string): vscode.MarkdownString {
 	let docString = new vscode.MarkdownString();
 	docString.appendMarkdown("## Escape Sequence:\n### ");
 	docString.appendMarkdown(escapeSequences[escape.toString()]);
+	return docString;
+}
+
+function generateConditionDescription(condition: string): vscode.MarkdownString {
+	let docString = new vscode.MarkdownString();
+	docString.appendMarkdown("## Condition:\n### ");
+	docString.appendMarkdown(conditionalOperands[condition.toString()]);
+	return docString;
+}
+
+function generateVaropDescription(varop: string): vscode.MarkdownString {
+	let docString = new vscode.MarkdownString();
+	docString.appendMarkdown("## Variable Operation:\n### ");
+	docString.appendMarkdown(varopOperands[varop.toString()]);
 	return docString;
 }
 
@@ -491,13 +544,37 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 							));
 						}
 					}
-
 					// Macros
 					for (let i = 0; i < definedMacros.length; i++) {
 						let c = definedMacros[i];
 						completionItems.push(new vscode.CompletionItem(
 							c, vscode.CompletionItemKind.TypeParameter
 						));
+					}
+					// Special operands
+					if (beforeCursor.includes("%ANALYZER")) {
+						for (let i = 0; i < analyzerOperands.length; i++) {
+							let c = analyzerOperands[i];
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Operator
+							));
+						}
+					}
+					else if (beforeCursor.includes("%VAROP")) {
+						for (const c in varopOperands) {
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Operator
+							));
+						}
+					}
+					else if (beforeCursor.includes("%IF")
+						|| beforeCursor.includes("%ELSE_IF")
+						|| beforeCursor.includes("%WHILE")) {
+						for (const c in conditionalOperands) {
+							completionItems.push(new vscode.CompletionItem(
+								c, vscode.CompletionItemKind.Operator
+							));
+						}
 					}
 				}
 			}
@@ -522,6 +599,16 @@ class AssEmblyCompletionItemProvider implements vscode.CompletionItemProvider {
 		// Escape sequence
 		else if (item.kind === vscode.CompletionItemKind.Value) {
 			item.documentation = generateEscapeDescription(item.label.toString());
+		}
+		// Special operands
+		else if (item.kind === vscode.CompletionItemKind.Operator) {
+			let label = item.label.toString();
+			if (varopOperands[label] !== undefined) {
+				item.documentation = generateVaropDescription(label);
+			}
+			else if (conditionalOperands[label] !== undefined) {
+				item.documentation = generateConditionDescription(label);
+			}
 		}
 		return item;
 	}
@@ -750,6 +837,17 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		if (definedMacros.includes(activeParameterOriginalCase)) {
 			return new vscode.Hover("## Macro Reference");
+		}
+		let upperLine = line.toUpperCase();
+		if (upperLine.startsWith("%ANALYZER") && analyzerOperands.includes(activeParameter)) {
+			return new vscode.Hover("## Analyzer Severity");
+		}
+		if (upperLine.startsWith("%VAROP") && varopOperands[activeParameter] !== undefined) {
+			return new vscode.Hover(generateVaropDescription(activeParameter));
+		}
+		if ((upperLine.startsWith("%IF") || upperLine.startsWith("%ELSE_IF") || upperLine.startsWith("%WHILE"))
+			&& conditionalOperands[activeParameter] !== undefined) {
+			return new vscode.Hover(generateConditionDescription(activeParameter));
 		}
 		return null;
 	}
