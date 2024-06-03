@@ -309,6 +309,10 @@ const escapeSequences: { [character: string]: string } = {
 
 const tokensLegend = new vscode.SemanticTokensLegend(["variable"], ["declaration"]);
 
+const parameterSeparators: string[] = [
+	',', '(', ' ', '[', '+', ']', ')'
+];
+
 // Populated by AssEmbly linter
 let labels: { [name: string]: number } = {};
 let definedVariables: string[] = [];
@@ -552,21 +556,18 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 				}
 			}
 			// If not an escape sequence, ignore everything else as we're in a string/character literal
-			return new vscode.Hover(new vscode.MarkdownString("## String"));
+			return new vscode.Hover("## String");
+		}
+		if (escapeSlice.includes(';')) {
+			return new vscode.Hover("## Comment");
 		}
 		// If cursor is in the middle of a parameter consider the whole parameter
-		let commaIndex = line.indexOf(',', charPosition);
-		let spaceIndex = line.indexOf(' ', charPosition);
-		let bracketIndex = line.indexOf('[', charPosition);
 		let endIndices: number[] = [];
-		if (bracketIndex !== -1) {
-			endIndices.push(bracketIndex);
-		}
-		if (commaIndex !== -1) {
-			endIndices.push(commaIndex);
-		}
-		if (spaceIndex !== -1) {
-			endIndices.push(spaceIndex);
+		for (let i = 0; i < parameterSeparators.length; i++) {
+			let index = line.indexOf(parameterSeparators[i], charPosition);
+			if (index !== -1) {
+				endIndices.push(index);
+			}
 		}
 		let endIndex: number;
 		if (endIndices.length === 0) {
@@ -576,20 +577,20 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			endIndex = Math.min(...endIndices);
 		}
 		let slicedLine = line.slice(0, endIndex);
-		let beforeCursorOriginalCase = slicedLine
-			.split('(').slice(-1)[0]
-			.split(')')[0]
-			.split('[').slice(-1)[0]
-			.split(']')[0]
-			.split('+').slice(-1)[0]
-			.split('*').slice(-1)[0];
+		let beforeCursorOriginalCase = slicedLine;
+		for (let i = 0; i < parameterSeparators.length; i++) {
+			let index = beforeCursorOriginalCase.lastIndexOf(parameterSeparators[i]);
+			if (index !== -1) {
+				beforeCursorOriginalCase = beforeCursorOriginalCase.slice(index + 1);
+			}
+		}
 		let beforeCursor = beforeCursorOriginalCase.toUpperCase();
-		// Don't provide hover for comments, strings, or empty lines
-		if (beforeCursor.includes(';') || beforeCursor.trimStart().length === 0) {
+		// Don't provide hover for empty lines
+		if (beforeCursor.trimStart().length === 0) {
 			return null;
 		}
 		// Mnemonic
-		if (!beforeCursor.includes(' ') && mnemonics[beforeCursor] !== undefined) {
+		if (!slicedLine.includes(' ') && mnemonics[beforeCursor] !== undefined) {
 			return new vscode.Hover(generateMnemonicDescription(beforeCursor));
 		}
 		let activeParameterOriginalCase = beforeCursorOriginalCase.split(' ').slice(-1)[0].split(',').slice(-1)[0];
@@ -617,11 +618,11 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			}
 			let hoverString;
 			if (activeParameter.length > 1 && activeParameter[1] === '&') {
-				hoverString = generateLabelDescription(activeParameter.slice(2), false);
+				hoverString = generateLabelDescription(activeParameterOriginalCase.slice(2), false);
 				hoverString.appendMarkdown("\n\n*`&`: Address corresponding to label will be treated as a literal numeric value*");
 			}
 			else {
-				hoverString = generateLabelDescription(activeParameter.slice(1), false);
+				hoverString = generateLabelDescription(activeParameterOriginalCase.slice(1), false);
 			}
 			if (endIndex < line.length && line[endIndex] === '[') {
 				hoverString.appendMarkdown("\n\n*`[...]`: Contents of the square brackets will be added to the label value at assemble-time to get the final address*");
@@ -630,7 +631,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 		}
 		// Label definition
 		if (activeParameter[0] === ":") {
-			return new vscode.Hover(generateLabelDescription(activeParameter.slice(1), true));
+			return new vscode.Hover(generateLabelDescription(activeParameterOriginalCase.slice(1), true));
 		}
 		// Character literal
 		if (activeParameter.length >= 3 && activeParameter[0] === '\''
@@ -700,8 +701,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 				num += BigInt(utf8Bytes[i]) << BigInt(i * 8);
 			}
 			numericalUtf8 = BigInt.asUintN(64, num);
-			return new vscode.Hover(
-				new vscode.MarkdownString(`## Character Literal\n\n**Numeric value:** \`${numericalUtf8}\``));
+			return new vscode.Hover(`## Character Literal\n\n**Numeric value:** \`${numericalUtf8}\``);
 		}
 		// Numeric literal
 		if ((activeParameter[0] >= '0' && activeParameter[0] <= '9')
@@ -731,6 +731,7 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 			}
 			return new vscode.Hover("## Assembler Variable");
 		}
+		// Pre-defined macro
 		if (activeParameter[0] === '#') {
 			let macro = activeParameter.slice(1);
 			for (let i = 0; i < predefinedMacros.length; i++) {
@@ -738,6 +739,17 @@ class AssEmblyHoverProvider implements vscode.HoverProvider {
 					return new vscode.Hover("## Pre-defined Macro");
 				}
 			}
+		}
+		// Macro parameter reference
+		if (activeParameter[0] === "$") {
+			let hoverString = new vscode.MarkdownString("## Macro Parameter Reference");
+			if (activeParameter.includes("!")) {
+				hoverString.appendMarkdown("\n\n*`!`: Required parameter*");
+			}
+			return new vscode.Hover(hoverString);
+		}
+		if (definedMacros.includes(activeParameterOriginalCase)) {
+			return new vscode.Hover("## Macro Reference");
 		}
 		return null;
 	}

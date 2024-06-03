@@ -178,7 +178,7 @@
 		},
 		"escape-sequence": {
 			"name": "constant.character.escape.assembly-tolly",
-			"match": "\\\\(\"|'|\\\\|0|a|b|f|n|r|t|v|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})"
+			"match": "\\\\(\"|'|\\\\|@|0|a|b|f|n|r|t|v|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})"
 		}
 	},
 	"scopeName": "source.assembly-tolly"
