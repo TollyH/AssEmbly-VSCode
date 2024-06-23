@@ -50,7 +50,7 @@
 			"patterns": [
 				{
 					"name": "constant.numeric.literal.binary.assembly-tolly",
-					"match": "(?i)(?<=\\s|,|\\(|\\[)0b[0-1_]+?(?=\\s|,|$|;|\\)|\\])"
+					"match": "(?i)(?<=\\s|,|\\(|\\[)-?0b[0-1_]+?(?=\\s|,|$|;|\\)|\\])"
 				},
 				{
 					"name": "constant.numeric.literal.decimal.assembly-tolly",
@@ -58,7 +58,7 @@
 				},
 				{
 					"name": "constant.numeric.literal.hexadecimal.assembly-tolly",
-					"match": "(?i)(?<=\\s|,|\\(|\\[)0x[0-9a-f_]+?(?=\\s|,|$|;|\\)|\\])"
+					"match": "(?i)(?<=\\s|,|\\(|\\[)-?0x[0-9a-f_]+?(?=\\s|,|$|;|\\)|\\])"
 				},
 				{
 					"name": "constant.numeric.literal.decimal.address.assembly-tolly",
